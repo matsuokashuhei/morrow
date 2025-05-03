@@ -10,6 +10,12 @@
   "initializeCommand": "sh .devcontainer/setup-profile.sh > credentials",
   "waitFor": "initializeCommand",
   "customizations": {
-    "vscode": {}
+    "vscode": {
+      "settings": {
+        "files.associations": {
+          "*.hcl": "terraform"
+        }
+      }
+    }
   }
 }
