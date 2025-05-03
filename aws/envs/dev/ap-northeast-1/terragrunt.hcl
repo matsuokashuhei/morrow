@@ -22,6 +22,8 @@ include "root" {
 # environment at a time (e.g., qa -> stage -> prod).
 terraform {
   # source = "${include.envcommon.locals.base_source_url}?ref=v0.8.0"
+  # source = "../../../modules/${basename(get_terragrunt_dir())}"
+  source = find_in_parent_folders("modules/${basename(get_terragrunt_dir())}")
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -31,4 +33,9 @@ terraform {
 # For production, we want to specify bigger instance classes and storage, so we specify override parameters here. These
 # inputs get merged with the common inputs from the root and the envcommon terragrunt.hcl
 inputs = {
+  aws_cognito_user_pool = {
+    morrow = {
+      name = "morrow-dev"
+    }
+  }
 }
