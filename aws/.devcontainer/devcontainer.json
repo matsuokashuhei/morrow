@@ -1,0 +1,21 @@
+{
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "runArgs": [
+    "--env-file=credentials"
+  ],
+  "features": {
+    "ghcr.io/devcontainers/features/aws-cli:1": {},
+    "ghcr.io/devcontainers/features/terraform:1": {},
+  },
+  "initializeCommand": "sh .devcontainer/setup-profile.sh > credentials",
+  "waitFor": "initializeCommand",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "files.associations": {
+          "*.hcl": "terraform"
+        }
+      }
+    }
+  }
+}
