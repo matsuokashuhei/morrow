@@ -1,57 +1,59 @@
-use axum::{
-    Json, Router,
-    http::StatusCode,
-    routing::{get, post},
-};
-use serde::{Deserialize, Serialize};
+mod application;
+mod domain;
+mod infrastructure;
+mod presentation;
+
+// use dotenvy::dotenv;
+use infrastructure::config::app_config::AppConfig;
+use presentation::graphql::schema::create_schema;
+use presentation::http::routes::create_routes;
+use std::sync::Arc;
+use tracing::{Level, info};
+use tracing_subscriber::FmtSubscriber;
 
 #[tokio::main]
-async fn main() {
-    // initialize tracing
-    tracing_subscriber::fmt::init();
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // 環境変数のロード
+    // dotenv().ok();
 
-    // build our application with a route
-    let app = Router::new()
-        // `GET /` goes to `root`
-        .route("/", get(root))
-        // `POST /users` goes to `create_user`
-        .route("/users", post(create_user));
+    // トレースの初期化
+    // tracing_subscriber::fmt::init();
+    // トレースの初期化 (デバッグレベルで設定)
+    let subscriber = FmtSubscriber::builder()
+        .with_max_level(Level::DEBUG)
+        .finish();
+    tracing::subscriber::set_global_default(subscriber).expect("Failed to set tracing subscriber");
 
-    // run our app with hyper, listening globally on port 3000
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
-    axum::serve(listener, app).await.unwrap();
-}
+    // アプリケーション設定の読み込み
+    let config = AppConfig::from_env()?;
+    info!("Application configuration loaded");
 
-// basic handler that responds with a static string
-async fn root() -> &'static str {
-    "Hello, World!"
-}
+    // データベース接続の確立
+    let db_pool =
+        infrastructure::database::connection::establish_connection(&config.database_url).await?;
+    info!("Database connection established");
 
-async fn create_user(
-    // this argument tells axum to parse the request body
-    // as JSON into a `CreateUser` type
-    Json(payload): Json<CreateUser>,
-) -> (StatusCode, Json<User>) {
-    // insert your application logic here
-    let user = User {
-        id: 1337,
-        username: payload.username,
-    };
+    // リポジトリの初期化
+    let repositories = infrastructure::database::repositories::init_repositories(db_pool.clone());
+    info!("Repositories initialized");
 
-    // this will be converted into a JSON response
-    // with a status code of `201 Created`
-    (StatusCode::CREATED, Json(user))
-}
+    // アプリケーションサービスの初期化
+    let services = application::services::init_services(Arc::new(repositories));
+    info!("Application services initialized");
 
-// the input to our `create_user` handler
-#[derive(Deserialize)]
-struct CreateUser {
-    username: String,
-}
+    // GraphQLスキーマの作成
+    let schema = create_schema(Arc::new(services.clone()));
+    info!("GraphQL schema created");
 
-// the output to our `create_user` handler
-#[derive(Serialize)]
-struct User {
-    id: u64,
-    username: String,
+    // HTTPルーターの作成
+    let app = create_routes(Arc::new(services), schema);
+    info!("HTTP router created");
+
+    // サーバーの起動
+    let addr = format!("{}:{}", config.host, config.port);
+    let listener = tokio::net::TcpListener::bind(addr).await?;
+    info!("Server listening on {}", listener.local_addr()?);
+
+    axum::serve(listener, app).await?;
+    Ok(())
 }
