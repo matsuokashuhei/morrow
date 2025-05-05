@@ -26,8 +26,9 @@ backend/
 │   │   │   ├── middlewares/ # axumのミドルウェア
 │   │   │   └── routes/      # axumのルート定義
 │   │   └── graphql/
-│   │       ├── objects/      # GraphQLスキーマ定義
+│   │       ├── types/       # GraphQL型定義
 │   │       ├── resolvers/   # GraphQLリゾルバー
+│   │       ├── mutations/   # GraphQLミューテーション
 │   │       └── scalars/     # カスタムGraphQLスカラー型
 │   │
 │   └── main.rs             # アプリケーションのエントリーポイント

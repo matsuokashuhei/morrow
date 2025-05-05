@@ -2,5 +2,5 @@
 // GraphQLクエリやミューテーションを処理します。
 
 // サンプルリゾルバーモジュールをここに追加します
-// pub mod user_resolver;
+pub mod user_resolver;
 // pub mod auth_resolver;

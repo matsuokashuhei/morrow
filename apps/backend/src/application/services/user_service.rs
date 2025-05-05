@@ -1,7 +1,7 @@
 use anyhow::Result;
 use std::sync::Arc;
 
-use crate::application::dtos::user_dto::{CreateUserInput, UpdateUserInput, UserDto};
+use crate::application::dtos::user_dto::{CreateUserDto, UpdateUserDto, UserDto};
 use crate::domain::entities::user::User;
 use crate::domain::repositories::user_repository::UserRepository;
 
@@ -16,7 +16,7 @@ impl UserService {
         }
     }
 
-    pub async fn create_user(&self, input: CreateUserInput) -> Result<UserDto> {
+    pub async fn create_user(&self, input: CreateUserDto) -> Result<UserDto> {
         let user = User::new(input.name);
         let created_user = self.user_repository.create(user).await?;
         Ok(UserDto::from(created_user))
@@ -32,7 +32,7 @@ impl UserService {
         Ok(users.into_iter().map(UserDto::from).collect())
     }
 
-    pub async fn update_user(&self, id: i32, input: UpdateUserInput) -> Result<Option<UserDto>> {
+    pub async fn update_user(&self, id: i32, input: UpdateUserDto) -> Result<Option<UserDto>> {
         if let Some(mut user) = self.user_repository.find_by_id(id).await? {
             user.name = input.name;
             let updated_user = self.user_repository.update(user).await?;

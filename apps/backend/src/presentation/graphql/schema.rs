@@ -1,23 +1,20 @@
 use crate::application::services::Services;
-use crate::presentation::graphql::objects::user_object::{UserMutation, UserQuery};
+use crate::presentation::graphql::mutations::user_mutation::UserMutation;
+use crate::presentation::graphql::resolvers::user_resolver::UserResolver;
 use async_graphql::{EmptySubscription, Schema, SchemaBuilder};
 use std::sync::Arc;
 
 // クエリルート定義
 pub struct QueryRoot {
-    user_query: UserQuery,
+    user_resolver: UserResolver,
     // 他のクエリをここに追加
 }
 
 #[async_graphql::Object]
 impl QueryRoot {
-    async fn hello(&self) -> &'static str {
-        "Hello, world!"
-    }
-
     // ユーザークエリへのアクセスを提供
-    async fn users(&self) -> &UserQuery {
-        &self.user_query
+    async fn users(&self) -> &UserResolver {
+        &self.user_resolver
     }
 }
 
@@ -29,10 +26,6 @@ pub struct MutationRoot {
 
 #[async_graphql::Object]
 impl MutationRoot {
-    async fn echo(&self, text: String) -> String {
-        text
-    }
-
     // ユーザーミューテーションへのアクセスを提供
     async fn users(&self) -> &UserMutation {
         &self.user_mutation
@@ -44,11 +37,13 @@ pub type AppSchema = Schema<QueryRoot, MutationRoot, EmptySubscription>;
 
 // スキーマを作成する関数
 pub fn create_schema(services: &Services) -> AppSchema {
-    let user_query = UserQuery::new(Arc::clone(&services.user_service));
+    let user_resolver = UserResolver::new(Arc::clone(&services.user_service));
     let user_mutation = UserMutation::new(Arc::clone(&services.user_service));
 
     Schema::build(
-        QueryRoot { user_query },
+        QueryRoot {
+            user_resolver: user_resolver,
+        },
         MutationRoot { user_mutation },
         EmptySubscription,
     )

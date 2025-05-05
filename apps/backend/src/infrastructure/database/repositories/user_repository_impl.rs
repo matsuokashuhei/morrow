@@ -1,8 +1,6 @@
 use anyhow::Result;
 use async_graphql::async_trait::async_trait;
-use sea_orm::{
-    ActiveModelTrait, ActiveValue, DatabaseConnection, EntityTrait,
-};
+use sea_orm::{ActiveModelTrait, ActiveValue, DatabaseConnection, EntityTrait};
 use std::sync::Arc;
 
 use crate::domain::entities::user::User;
@@ -27,8 +25,7 @@ impl UserRepository for UserRepositoryImpl {
         let active_model = UserActiveModel {
             id: ActiveValue::NotSet,
             name: ActiveValue::Set(user.name.clone()),
-            created_at: ActiveValue::Set(user.created_at),
-            updated_at: ActiveValue::Set(user.updated_at),
+            ..Default::default()
         };
 
         let model = active_model.insert(self.db.as_ref()).await?;
@@ -65,8 +62,7 @@ impl UserRepository for UserRepositoryImpl {
         let active_model = UserActiveModel {
             id: ActiveValue::Set(id),
             name: ActiveValue::Set(user.name.clone()),
-            created_at: ActiveValue::NotSet, // Keep the original timestamp
-            updated_at: ActiveValue::Set(user.updated_at),
+            ..Default::default()
         };
 
         let model = active_model.update(self.db.as_ref()).await?;
