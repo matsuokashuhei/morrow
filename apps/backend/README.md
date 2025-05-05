@@ -1,6 +1,6 @@
 @@ -0,0 +1,42 @@
 ```
-my-rust-project/
+backend/
 ├── src/
 │   ├── domain/
 │   │   ├── entities/        # ビジネスエンティティ
@@ -26,7 +26,7 @@ my-rust-project/
 │   │   │   ├── middlewares/ # axumのミドルウェア
 │   │   │   └── routes/      # axumのルート定義
 │   │   └── graphql/
-│   │       ├── schema/      # GraphQLスキーマ定義
+│   │       ├── objects/      # GraphQLスキーマ定義
 │   │       ├── resolvers/   # GraphQLリゾルバー
 │   │       └── scalars/     # カスタムGraphQLスカラー型
 │   │
@@ -39,5 +39,11 @@ my-rust-project/
 │   └── presentation/        # プレゼンテーションのテスト
 │
 ├── Cargo.toml
-└── .env                     # 環境設定
+├── .env                     # 環境設定
+└── migration                # データベースマイグレーション
+    ├── src/
+    │   ├── lib.rs
+    │   ├── main.rs
+    │   └── mYYYYMMDD_HHMMSS_xxx.rs
+    └── Cargo.toml
 ```
