@@ -1,20 +1,12 @@
 use std::sync::Arc;
 use axum::{Router, routing::get};
-use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use crate::application::services::Services;
 use crate::presentation::graphql::schema::AppSchema;
+use crate::presentation::http::handlers::graphql_handler::{graphql_handler, graphql_playground};
 
 // ヘルスチェックハンドラー
 async fn health_check() -> &'static str {
     "Healthy"
-}
-
-// GraphQLハンドラー
-async fn graphql_handler(
-    schema: axum::extract::State<AppSchema>,
-    req: GraphQLRequest,
-) -> GraphQLResponse {
-    schema.execute(req.into_inner()).await.into()
 }
 
 // ルーターを作成する関数
@@ -24,7 +16,8 @@ pub fn create_routes(
 ) -> Router {
     Router::new()
         .route("/health", get(health_check))
-        .route("/graphql", get(graphql_handler).post(graphql_handler))
+        .route("/graphql", get(graphql_playground).post(graphql_handler))
         .with_state(schema)
         // 他のルートやミドルウェアをここに追加
 }
+

@@ -42,7 +42,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     info!("Application services initialized");
 
     // GraphQLスキーマの作成
-    let schema = create_schema(Arc::new(services.clone()));
+    let schema = create_schema(&services);
     info!("GraphQL schema created");
 
     // HTTPルーターの作成
