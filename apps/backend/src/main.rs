@@ -46,7 +46,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     info!("GraphQL schema created");
 
     // HTTPルーターの作成
-    let app = create_routes(Arc::new(services), schema);
+    let router = create_routes(Arc::new(services), schema);
     info!("HTTP router created");
 
     // サーバーの起動
@@ -54,6 +54,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let listener = tokio::net::TcpListener::bind(addr).await?;
     info!("Server listening on {}", listener.local_addr()?);
 
-    axum::serve(listener, app).await?;
+    axum::serve(listener, router).await?;
     Ok(())
 }
