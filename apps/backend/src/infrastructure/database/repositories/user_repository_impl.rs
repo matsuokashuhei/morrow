@@ -3,7 +3,7 @@ use async_graphql::async_trait::async_trait;
 use sea_orm::{ActiveModelTrait, ActiveValue, DatabaseConnection, EntityTrait};
 use std::sync::Arc;
 
-use crate::domain::entities::user::User;
+use crate::domain::entities::user::{NewUser, User};
 use crate::domain::repositories::user_repository::UserRepository;
 use crate::infrastructure::database::models::user::{
     ActiveModel as UserActiveModel, Entity as UserEntity,
@@ -21,58 +21,30 @@ impl UserRepositoryImpl {
 
 #[async_trait]
 impl UserRepository for UserRepositoryImpl {
-    async fn create(&self, user: User) -> Result<User> {
-        let active_model = UserActiveModel {
-            id: ActiveValue::NotSet,
-            name: ActiveValue::Set(user.name.clone()),
-            ..Default::default()
-        };
-
+    async fn create(&self, new_user: NewUser) -> Result<User> {
+        let active_model = UserActiveModel::from(new_user);
         let model = active_model.insert(self.db.as_ref()).await?;
 
-        Ok(User::with_id(
-            model.id,
-            model.name,
-            model.created_at,
-            model.updated_at,
-        ))
+        Ok(User::from(model))
     }
 
     async fn find_by_id(&self, id: i32) -> Result<Option<User>> {
         let model = UserEntity::find_by_id(id).one(self.db.as_ref()).await?;
 
-        Ok(model.map(|m| User::with_id(m.id, m.name, m.created_at, m.updated_at)))
+        Ok(model.map(User::from))
     }
 
     async fn find_all(&self) -> Result<Vec<User>> {
         let models = UserEntity::find().all(self.db.as_ref()).await?;
 
-        Ok(models
-            .into_iter()
-            .map(|m| User::with_id(m.id, m.name, m.created_at, m.updated_at))
-            .collect())
+        Ok(models.into_iter().map(User::from).collect())
     }
 
     async fn update(&self, user: User) -> Result<User> {
-        let id = user
-            .id
-            .ok_or_else(|| anyhow::anyhow!("User ID is required for update"))?;
-
-        // Use the concrete initialization instead of new()
-        let active_model = UserActiveModel {
-            id: ActiveValue::Set(id),
-            name: ActiveValue::Set(user.name.clone()),
-            ..Default::default()
-        };
-
+        let active_model = UserActiveModel::from(user);
         let model = active_model.update(self.db.as_ref()).await?;
 
-        Ok(User::with_id(
-            model.id,
-            model.name,
-            model.created_at,
-            model.updated_at,
-        ))
+        Ok(User::from(model))
     }
 
     async fn delete(&self, id: i32) -> Result<()> {
