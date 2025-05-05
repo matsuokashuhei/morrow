@@ -1,6 +1,5 @@
 use crate::application::services::Services;
-use crate::domain::repositories::user_repository::UserRepository;
-use crate::presentation::graphql::object::user_object::{UserMutation, UserQuery};
+use crate::presentation::graphql::objects::user_object::{UserMutation, UserQuery};
 use async_graphql::{EmptySubscription, Schema, SchemaBuilder};
 use std::sync::Arc;
 

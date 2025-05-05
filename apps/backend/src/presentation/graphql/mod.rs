@@ -1,4 +1,4 @@
-pub mod object;
+pub mod objects;
 pub mod resolvers;
 pub mod scalars;
 pub mod schema;
