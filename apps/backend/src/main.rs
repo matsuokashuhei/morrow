@@ -29,12 +29,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     info!("Application configuration loaded");
 
     // データベース接続の確立
-    let db_pool =
+    let connection =
         infrastructure::database::connection::establish_connection(&config.database_url).await?;
     info!("Database connection established");
 
     // リポジトリの初期化
-    let repositories = infrastructure::database::repositories::init_repositories(db_pool.clone());
+    let repositories =
+        infrastructure::database::repositories::init_repositories(connection.clone());
     info!("Repositories initialized");
 
     // アプリケーションサービスの初期化

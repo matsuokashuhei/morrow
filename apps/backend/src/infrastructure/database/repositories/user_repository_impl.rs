@@ -10,12 +10,12 @@ use crate::infrastructure::database::models::user::{
 };
 
 pub struct UserRepositoryImpl {
-    db: Arc<DatabaseConnection>,
+    connection: Arc<DatabaseConnection>,
 }
 
 impl UserRepositoryImpl {
-    pub fn new(db: Arc<DatabaseConnection>) -> Self {
-        Self { db }
+    pub fn new(connection: Arc<DatabaseConnection>) -> Self {
+        Self { connection }
     }
 }
 
@@ -23,32 +23,36 @@ impl UserRepositoryImpl {
 impl UserRepository for UserRepositoryImpl {
     async fn create(&self, new_user: NewUser) -> Result<User> {
         let active_model = UserActiveModel::from(new_user);
-        let model = active_model.insert(self.db.as_ref()).await?;
+        let model = active_model.insert(self.connection.as_ref()).await?;
 
         Ok(User::from(model))
     }
 
     async fn find_by_id(&self, id: i32) -> Result<Option<User>> {
-        let model = UserEntity::find_by_id(id).one(self.db.as_ref()).await?;
+        let model = UserEntity::find_by_id(id)
+            .one(self.connection.as_ref())
+            .await?;
 
         Ok(model.map(User::from))
     }
 
     async fn find_all(&self) -> Result<Vec<User>> {
-        let models = UserEntity::find().all(self.db.as_ref()).await?;
+        let models = UserEntity::find().all(self.connection.as_ref()).await?;
 
         Ok(models.into_iter().map(User::from).collect())
     }
 
     async fn update(&self, user: User) -> Result<User> {
         let active_model = UserActiveModel::from(user);
-        let model = active_model.update(self.db.as_ref()).await?;
+        let model = active_model.update(self.connection.as_ref()).await?;
 
         Ok(User::from(model))
     }
 
     async fn delete(&self, id: i32) -> Result<()> {
-        UserEntity::delete_by_id(id).exec(self.db.as_ref()).await?;
+        UserEntity::delete_by_id(id)
+            .exec(self.connection.as_ref())
+            .await?;
         Ok(())
     }
 }
