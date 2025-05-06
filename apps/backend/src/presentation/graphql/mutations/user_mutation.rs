@@ -1,19 +1,28 @@
+// use anyhow::Result;
 use async_graphql::{Context, Object, Result};
 use std::sync::Arc;
 
+use crate::application::dtos::cognito_user_dto::CreateCognitoUserDto;
 use crate::application::dtos::user_dto::{CreateUserDto, UpdateUserDto};
-use crate::application::services::UserService;
+use crate::application::services::{CognitoUserService, UserService};
 use crate::presentation::graphql::types::user_type::{
     CreateUserInputType, UpdateUserInputType, UserType,
 };
 
 pub struct UserMutation {
-    service: Arc<UserService>,
+    user_service: Arc<UserService>,
+    cognito_user_service: Arc<CognitoUserService>,
 }
 
 impl UserMutation {
-    pub fn new(service: Arc<UserService>) -> Self {
-        Self { service }
+    pub fn new(
+        user_service: Arc<UserService>,
+        cognito_user_service: Arc<CognitoUserService>,
+    ) -> Self {
+        Self {
+            user_service,
+            cognito_user_service,
+        }
     }
 }
 
@@ -24,8 +33,13 @@ impl UserMutation {
         _ctx: &Context<'_>,
         input: CreateUserInputType,
     ) -> Result<UserType> {
-        let dto = CreateUserDto::from(input);
-        let user = self.service.create_user(dto).await?;
+        let create_user_dto = CreateUserDto::from(input.clone());
+        let user = self.user_service.create_user(create_user_dto).await?;
+        let create_cognito_user_dto = CreateCognitoUserDto::from(input.clone());
+        let cognito_user = self
+            .cognito_user_service
+            .sign_up(create_cognito_user_dto)
+            .await?;
 
         Ok(UserType::from(user))
     }
@@ -37,12 +51,12 @@ impl UserMutation {
         input: UpdateUserInputType,
     ) -> Result<Option<UserType>> {
         let dto = UpdateUserDto::from(input);
-        let user = self.service.update_user(id, dto).await?;
+        let user = self.user_service.update_user(id, dto).await?;
 
         Ok(user.map(UserType::from))
     }
 
     async fn delete_user(&self, _ctx: &Context<'_>, id: i32) -> Result<bool> {
-        Ok(self.service.delete_user(id).await?)
+        Ok(self.user_service.delete_user(id).await?)
     }
 }

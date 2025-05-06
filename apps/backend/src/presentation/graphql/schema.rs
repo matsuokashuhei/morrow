@@ -38,7 +38,10 @@ pub type AppSchema = Schema<QueryRoot, MutationRoot, EmptySubscription>;
 // スキーマを作成する関数
 pub fn create_schema(services: &Services) -> AppSchema {
     let user_resolver = UserResolver::new(Arc::clone(&services.user_service));
-    let user_mutation = UserMutation::new(Arc::clone(&services.user_service));
+    let user_mutation = UserMutation::new(
+        Arc::clone(&services.user_service),
+        Arc::clone(&services.cognito_user_service),
+    );
 
     Schema::build(
         QueryRoot {

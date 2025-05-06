@@ -1,6 +1,6 @@
 use anyhow::Result;
 use async_graphql::async_trait::async_trait;
-use sea_orm::{ActiveModelTrait, ActiveValue, DatabaseConnection, EntityTrait};
+use sea_orm::{ActiveModelTrait, DatabaseConnection, EntityTrait};
 use std::sync::Arc;
 
 use crate::domain::entities::user::{NewUser, User};

@@ -22,10 +22,12 @@ impl From<UserDto> for UserType {
     }
 }
 
-#[derive(InputObject)]
+#[derive(InputObject, Clone)]
 pub struct CreateUserInputType {
     #[graphql(validator(min_length = 1))]
     pub name: String,
+    pub email: String,
+    pub password: String,
 }
 
 #[derive(InputObject)]

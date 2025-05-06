@@ -3,6 +3,7 @@ mod domain;
 mod infrastructure;
 mod presentation;
 
+use aws_config::BehaviorVersion;
 use dotenvy::dotenv;
 use infrastructure::config::app_config::AppConfig;
 use presentation::graphql::schema::create_schema;
@@ -33,9 +34,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         infrastructure::database::connection::establish_connection(&config.database_url).await?;
     info!("Database connection established");
 
+    let sdk_config = aws_config::load_defaults(aws_config::BehaviorVersion::latest()).await;
+    info!("AWS SDK configuration loaded");
+
     // リポジトリの初期化
     let repositories =
-        infrastructure::database::repositories::init_repositories(connection.clone());
+        infrastructure::database::repositories::init_repositories(connection.clone(), &sdk_config);
     info!("Repositories initialized");
 
     // アプリケーションサービスの初期化

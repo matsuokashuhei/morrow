@@ -6,6 +6,8 @@
   ],
   "workspaceFolder": "/workspace/morrow/apps/backend",
   "service": "backend",
+  "initializeCommand": "sh .devcontainer/setup-aws-profile.sh > credentials",
+  "waitFor": "initializeCommand",
   "shutdownAction": "stopCompose",
   "customizations": {
     "vscode": {

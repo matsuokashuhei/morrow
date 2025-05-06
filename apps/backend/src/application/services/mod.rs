@@ -1,20 +1,24 @@
 use std::sync::Arc;
 
 // サービスモジュールのインポート
+pub mod cognito_user_service;
 pub mod user_service;
 // mod auth_service;
 
 // エクスポート
+pub use cognito_user_service::CognitoUserService;
 pub use user_service::UserService;
-// pub use auth_service::AuthService;
 
-use crate::domain::repositories::user_repository::UserRepository;
+use crate::domain::repositories::{
+    cognito_user_repository::CognitoUserRepository, user_repository::UserRepository,
+};
 
 // リポジトリを格納する構造体
 #[derive(Clone)]
 pub struct Repositories {
     // 各リポジトリをここに追加
     pub user_repository: Arc<dyn UserRepository>,
+    pub cognito_user_repository: Arc<dyn CognitoUserRepository>,
 }
 
 // サービスを格納する構造体
@@ -22,6 +26,7 @@ pub struct Repositories {
 pub struct Services {
     // 各サービスをここに追加
     pub user_service: Arc<UserService>,
+    pub cognito_user_service: Arc<CognitoUserService>,
     // pub auth_service: AuthService,
 }
 
@@ -30,6 +35,8 @@ pub fn init_services(repositories: Arc<Repositories>) -> Services {
     Services {
         // サービスの初期化
         user_service: Arc::new(UserService::new(repositories.user_repository.clone())),
-        // auth_service: AuthService::new(Arc::clone(&repositories.user_repository)),
+        cognito_user_service: Arc::new(CognitoUserService::new(
+            repositories.cognito_user_repository.clone(),
+        )),
     }
 }
