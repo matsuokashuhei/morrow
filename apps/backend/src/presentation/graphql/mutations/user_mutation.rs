@@ -2,47 +2,37 @@
 use async_graphql::{Context, Object, Result};
 use std::sync::Arc;
 
-use crate::application::dtos::cognito_user_dto::CreateCognitoUserDto;
-use crate::application::dtos::user_dto::{CreateUserDto, UpdateUserDto};
-use crate::application::services::{CognitoUserService, UserService};
-use crate::presentation::graphql::types::user_type::{
-    CreateUserInputType, UpdateUserInputType, UserType,
-};
+use crate::application::dtos::user_dto::UpdateUserDto;
+use crate::application::services::UserService;
+use crate::presentation::graphql::types::user_type::{UpdateUserInputType, UserType};
 
 pub struct UserMutation {
     user_service: Arc<UserService>,
-    cognito_user_service: Arc<CognitoUserService>,
 }
 
 impl UserMutation {
-    pub fn new(
-        user_service: Arc<UserService>,
-        cognito_user_service: Arc<CognitoUserService>,
-    ) -> Self {
-        Self {
-            user_service,
-            cognito_user_service,
-        }
+    pub fn new(user_service: Arc<UserService>) -> Self {
+        Self { user_service }
     }
 }
 
 #[Object]
 impl UserMutation {
-    async fn create_user(
-        &self,
-        _ctx: &Context<'_>,
-        input: CreateUserInputType,
-    ) -> Result<UserType> {
-        let create_user_dto = CreateUserDto::from(input.clone());
-        let user = self.user_service.create_user(create_user_dto).await?;
-        let create_cognito_user_dto = CreateCognitoUserDto::from(input.clone());
-        let cognito_user = self
-            .cognito_user_service
-            .sign_up(create_cognito_user_dto)
-            .await?;
+    // async fn create_user(
+    //     &self,
+    //     _ctx: &Context<'_>,
+    //     input: CreateUserInputType,
+    // ) -> Result<UserType> {
+    //     let create_user_dto = CreateUserDto::from(input.clone());
+    //     let user = self.user_service.create_user(create_user_dto).await?;
+    //     let create_cognito_user_dto = CreateCognitoUserDto::from(input.clone());
+    //     let cognito_user = self
+    //         .cognito_user_service
+    //         .sign_up(create_cognito_user_dto)
+    //         .await?;
 
-        Ok(UserType::from(user))
-    }
+    //     Ok(UserType::from(user))
+    // }
 
     async fn update_user(
         &self,

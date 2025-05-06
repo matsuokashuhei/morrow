@@ -2,6 +2,6 @@
 // 例: ユーザー、製品、注文など
 
 // エンティティのモジュール
-pub mod cognito_user;
+pub mod oauth_user;
 pub mod user;
 // pub mod product;

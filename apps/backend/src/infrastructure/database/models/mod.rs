@@ -2,6 +2,5 @@
 // これらはデータベースのテーブルとマッピングします。
 
 // データベースモデル
-pub mod cognito_user;
+pub mod oauth_user;
 pub mod user;
-// pub mod product;

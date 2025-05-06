@@ -34,10 +34,11 @@ pub enum User {
 }
 
 #[derive(DeriveIden)]
-pub enum CognitoUser {
-    #[sea_orm(iden = "cognito_users")]
+pub enum OAuthUser {
+    #[sea_orm(iden = "oauth_users")]
     Table,
     Id,
+    Provider,
     Sub,
     UserId,
 }
