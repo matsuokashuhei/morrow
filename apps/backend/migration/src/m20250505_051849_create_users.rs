@@ -1,6 +1,7 @@
 use sea_orm_migration::{prelude::*, schema::*};
 
-use crate::{define_created_at, define_id, define_updated_at};
+use crate::columns::User;
+use crate::columns::{define_created_at, define_id, define_updated_at};
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -27,11 +28,4 @@ impl MigrationTrait for Migration {
             .drop_table(Table::drop().table(User::Table).to_owned())
             .await
     }
-}
-
-#[derive(DeriveIden)]
-enum User {
-    #[sea_orm(iden = "users")]
-    Table,
-    Name,
 }
