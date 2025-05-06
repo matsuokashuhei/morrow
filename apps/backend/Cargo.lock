@@ -480,6 +480,7 @@ dependencies = [
  "async-graphql-axum",
  "axum",
  "chrono",
+ "dotenvy",
  "sea-orm",
  "serde",
  "thiserror 2.0.12",

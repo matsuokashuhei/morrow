@@ -3,7 +3,7 @@ mod domain;
 mod infrastructure;
 mod presentation;
 
-// use dotenvy::dotenv;
+use dotenvy::dotenv;
 use infrastructure::config::app_config::AppConfig;
 use presentation::graphql::schema::create_schema;
 use presentation::http::routes::create_routes;
@@ -14,7 +14,7 @@ use tracing_subscriber::FmtSubscriber;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // 環境変数のロード
-    // dotenv().ok();
+    dotenv().ok();
 
     // トレースの初期化
     // tracing_subscriber::fmt::init();
