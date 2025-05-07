@@ -34,8 +34,8 @@ pub enum User {
 }
 
 #[derive(DeriveIden)]
-pub enum OAuthUser {
-    #[sea_orm(iden = "oauth_users")]
+pub enum IdentityLink {
+    #[sea_orm(iden = "identity_links")]
     Table,
     Id,
     Provider,
