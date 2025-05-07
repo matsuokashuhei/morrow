@@ -1,0 +1,35 @@
+{
+  "name": "backend",
+  "dockerComposeFile": [
+    "../../compose.yml",
+    "./compose.yml"
+  ],
+  "workspaceFolder": "/workspace/morrow/apps/backend",
+  "service": "backend",
+  "initializeCommand": "sh .devcontainer/setup-aws-profile.sh > credentials",
+  "waitFor": "initializeCommand",
+  "shutdownAction": "stopCompose",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        //   "apollographql.vscode-apollo",
+        "fill-labs.dependi",
+        // "mhutchie.git-graph",
+        "rust-lang.rust-analyzer",
+        "tamasfe.even-better-toml",
+        "vadimcn.vscode-lldb",
+        "GraphQL.vscode-graphql"
+      ],
+      "settings": {
+        "[rust]": {
+          "editor.defaultFormatter": "rust-lang.rust-analyzer",
+          "editor.formatOnSave": true
+        }
+      }
+    }
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/aws-cli:1": {},
+    "ghcr.io/devcontainers/features/common-utils:2": {}
+  }
+}

@@ -1,0 +1,52 @@
+use chrono::{DateTime, Utc};
+use sea_orm::ActiveValue;
+
+use crate::{
+    application::dtos::{authentication_dto::SignUpDto, user_dto::CreateUserDto},
+    infrastructure::database::models::user,
+};
+
+#[derive(Debug, Clone)]
+pub struct NewUser {
+    pub name: String,
+}
+
+impl From<SignUpDto> for NewUser {
+    fn from(input: SignUpDto) -> Self {
+        Self { name: input.name }
+    }
+}
+
+impl From<NewUser> for user::ActiveModel {
+    fn from(user: NewUser) -> Self {
+        user::ActiveModel {
+            id: ActiveValue::NotSet,
+            name: ActiveValue::Set(user.name),
+            ..Default::default()
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct User {
+    pub id: i32,
+    pub name: String,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+}
+
+impl From<CreateUserDto> for NewUser {
+    fn from(input: CreateUserDto) -> Self {
+        Self { name: input.name }
+    }
+}
+
+impl From<User> for user::ActiveModel {
+    fn from(user: User) -> user::ActiveModel {
+        user::ActiveModel {
+            id: ActiveValue::Set(user.id),
+            name: ActiveValue::Set(user.name.clone()),
+            ..Default::default()
+        }
+    }
+}

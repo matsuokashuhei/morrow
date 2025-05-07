@@ -1,0 +1,7 @@
+services:
+  backend:
+    build:
+      target: dev
+    command: sleep infinity
+    env_file:
+      - backend/credentials
