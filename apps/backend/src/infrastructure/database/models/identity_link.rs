@@ -1,10 +1,10 @@
 use chrono::{DateTime, Utc};
 use sea_orm::entity::prelude::*;
 
-use crate::domain::entities::oauth_user::OAuthUser;
+use crate::domain::entities::identity_link::IdentityLink;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
-#[sea_orm(table_name = "oauth_users")]
+#[sea_orm(table_name = "identity_links")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
@@ -20,7 +20,7 @@ pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}
 
-impl From<Model> for OAuthUser {
+impl From<Model> for IdentityLink {
     fn from(model: Model) -> Self {
         Self {
             id: model.id,

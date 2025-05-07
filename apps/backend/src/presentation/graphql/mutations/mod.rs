@@ -1,2 +1,2 @@
-pub mod auth_mutation;
+pub mod authentication_mutation;
 pub mod user_mutation;

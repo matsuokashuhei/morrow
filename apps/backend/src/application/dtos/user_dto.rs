@@ -1,6 +1,6 @@
 use crate::{
     domain::entities::user::User,
-    presentation::graphql::types::user_type::{CreateUserInputType, UpdateUserInputType},
+    presentation::graphql::types::user_type::{CreateUserInput, UpdateUserInput},
 };
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
@@ -29,8 +29,8 @@ pub struct CreateUserDto {
     pub name: String,
 }
 
-impl From<CreateUserInputType> for CreateUserDto {
-    fn from(input: CreateUserInputType) -> Self {
+impl From<CreateUserInput> for CreateUserDto {
+    fn from(input: CreateUserInput) -> Self {
         Self { name: input.name }
     }
 }
@@ -40,8 +40,8 @@ pub struct UpdateUserDto {
     pub name: String,
 }
 
-impl From<UpdateUserInputType> for UpdateUserDto {
-    fn from(input: UpdateUserInputType) -> Self {
+impl From<UpdateUserInput> for UpdateUserDto {
+    fn from(input: UpdateUserInput) -> Self {
         Self { name: input.name }
     }
 }

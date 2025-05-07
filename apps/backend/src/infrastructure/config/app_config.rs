@@ -5,7 +5,7 @@ pub struct AppConfig {
     pub host: String,
     pub port: u16,
     pub database_url: String,
-    // 他の設定項目をここに追加
+    pub aws_cognito_user_pool_client_id: String,
 }
 
 impl AppConfig {
@@ -23,7 +23,8 @@ impl AppConfig {
                 std::env::var("MYSQL_HOST").unwrap(),
                 std::env::var("MYSQL_PORT").unwrap(),
                 std::env::var("MYSQL_DATABASE").unwrap()
-            ), // 他の設定項目の読み込み
+            ),
+            aws_cognito_user_pool_client_id: env::var("AWS_COGNITO_USER_POOL_CLIENT_ID").unwrap(),
         })
     }
 }

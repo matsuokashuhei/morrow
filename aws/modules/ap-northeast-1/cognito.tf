@@ -33,8 +33,8 @@ resource "aws_cognito_user_pool_client" "morrow_api" {
   # generate_secret              = true
   # refresh_token_validity       = 30
   # prevent_user_existence_errors = "ENABLED"
-  # explicit_auth_flows = [
-  #   "ALLOW_USER_PASSWORD_AUTH",
-  #   "ALLOW_REFRESH_TOKEN_AUTH"
-  # ]
+  explicit_auth_flows = [
+    "ADMIN_NO_SRP_AUTH",
+    "USER_PASSWORD_AUTH",
+  ]
 }

@@ -2,5 +2,5 @@
 // これらはデータベースのテーブルとマッピングします。
 
 // データベースモデル
-pub mod oauth_user;
+pub mod identity_link;
 pub mod user;

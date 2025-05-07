@@ -3,7 +3,6 @@ mod domain;
 mod infrastructure;
 mod presentation;
 
-use aws_config::BehaviorVersion;
 use dotenvy::dotenv;
 use infrastructure::config::app_config::AppConfig;
 use presentation::graphql::schema::create_schema;

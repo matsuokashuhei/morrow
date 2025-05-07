@@ -2,7 +2,7 @@ use chrono::{DateTime, Utc};
 use sea_orm::ActiveValue;
 
 use crate::{
-    application::dtos::{auth_dto::SignUpDto, user_dto::CreateUserDto},
+    application::dtos::{authentication_dto::SignUpDto, user_dto::CreateUserDto},
     infrastructure::database::models::user,
 };
 

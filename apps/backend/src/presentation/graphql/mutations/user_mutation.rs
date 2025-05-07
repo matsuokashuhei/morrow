@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 use crate::application::dtos::user_dto::UpdateUserDto;
 use crate::application::services::UserService;
-use crate::presentation::graphql::types::user_type::{UpdateUserInputType, UserType};
+use crate::presentation::graphql::types::user_type::{UpdateUserInput, User};
 
 pub struct UserMutation {
     user_service: Arc<UserService>,
@@ -38,12 +38,12 @@ impl UserMutation {
         &self,
         _ctx: &Context<'_>,
         id: i32,
-        input: UpdateUserInputType,
-    ) -> Result<Option<UserType>> {
+        input: UpdateUserInput,
+    ) -> Result<Option<User>> {
         let dto = UpdateUserDto::from(input);
         let user = self.user_service.update_user(id, dto).await?;
 
-        Ok(user.map(UserType::from))
+        Ok(user.map(User::from))
     }
 
     async fn delete_user(&self, _ctx: &Context<'_>, id: i32) -> Result<bool> {

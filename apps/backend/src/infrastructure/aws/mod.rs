@@ -1,1 +1,1 @@
-pub mod cognito_oauth_provider;
+pub mod cognito_oidc_provider;

@@ -4,14 +4,14 @@ use chrono::{DateTime, Utc};
 use crate::application::dtos::user_dto::UserDto;
 
 #[derive(SimpleObject)]
-pub struct UserType {
+pub struct User {
     pub id: i32,
     pub name: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
 
-impl From<UserDto> for UserType {
+impl From<UserDto> for User {
     fn from(user: UserDto) -> Self {
         Self {
             id: user.id,
@@ -23,7 +23,7 @@ impl From<UserDto> for UserType {
 }
 
 #[derive(InputObject, Clone)]
-pub struct CreateUserInputType {
+pub struct CreateUserInput {
     #[graphql(validator(min_length = 1))]
     pub name: String,
     pub email: String,
@@ -31,7 +31,7 @@ pub struct CreateUserInputType {
 }
 
 #[derive(InputObject)]
-pub struct UpdateUserInputType {
+pub struct UpdateUserInput {
     #[graphql(validator(min_length = 1))]
     pub name: String,
 }

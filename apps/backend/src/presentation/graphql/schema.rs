@@ -4,7 +4,7 @@ use crate::presentation::graphql::resolvers::user_resolver::UserResolver;
 use async_graphql::{EmptySubscription, Schema, SchemaBuilder};
 use std::sync::Arc;
 
-use super::mutations::auth_mutation::AuthMutation;
+use super::mutations::authentication_mutation::AuthenticationMutation;
 
 // クエリルート定義
 pub struct QueryRoot {
@@ -22,7 +22,7 @@ impl QueryRoot {
 
 // ミューテーションルート定義
 pub struct MutationRoot {
-    auth_mutation: AuthMutation,
+    auth_mutation: AuthenticationMutation,
     user_mutation: UserMutation,
     // 他のミューテーションをここに追加
 }
@@ -33,7 +33,7 @@ impl MutationRoot {
     async fn users(&self) -> &UserMutation {
         &self.user_mutation
     }
-    async fn auth(&self) -> &AuthMutation {
+    async fn auth(&self) -> &AuthenticationMutation {
         &self.auth_mutation
     }
 }
@@ -45,7 +45,7 @@ pub type AppSchema = Schema<QueryRoot, MutationRoot, EmptySubscription>;
 pub fn create_schema(services: &Services) -> AppSchema {
     let user_resolver = UserResolver::new(Arc::clone(&services.user_service));
     let user_mutation = UserMutation::new(Arc::clone(&services.user_service));
-    let auth_mutation = AuthMutation::new(Arc::clone(&services.auth_service));
+    let auth_mutation = AuthenticationMutation::new(Arc::clone(&services.auth_service));
 
     Schema::build(
         QueryRoot { user_resolver },

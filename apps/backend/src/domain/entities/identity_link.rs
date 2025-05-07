@@ -1,18 +1,18 @@
 use chrono::{DateTime, Utc};
 use sea_orm::ActiveValue;
 
-use crate::infrastructure::database::models::oauth_user;
+use crate::infrastructure::database::models::identity_link;
 
 #[derive(Debug, Clone)]
-pub struct NewOAuthUser {
+pub struct NewIdentityLink {
     pub provider: String,
     pub sub: String,
     pub user_id: i32,
 }
 
-impl From<NewOAuthUser> for oauth_user::ActiveModel {
-    fn from(user: NewOAuthUser) -> Self {
-        oauth_user::ActiveModel {
+impl From<NewIdentityLink> for identity_link::ActiveModel {
+    fn from(user: NewIdentityLink) -> Self {
+        identity_link::ActiveModel {
             id: ActiveValue::NotSet,
             provider: ActiveValue::Set(user.provider),
             sub: ActiveValue::Set(user.sub),
@@ -23,7 +23,7 @@ impl From<NewOAuthUser> for oauth_user::ActiveModel {
 }
 
 #[derive(Debug, Clone)]
-pub struct OAuthUser {
+pub struct IdentityLink {
     pub id: i32,
     pub provider: String,
     pub sub: String,
