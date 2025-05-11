@@ -1,9 +1,10 @@
 use anyhow::{Result, format_err};
 use async_trait::async_trait;
+use jsonwebtokens_cognito::KeySet;
 
 use crate::domain::{
     services::authentication_service::AuthenticationService,
-    value_objects::authentication::{SignInOutput, SignUpOutput},
+    value_objects::authentication::{Claims, SignInOutput, SignUpOutput},
 };
 
 pub struct CognitoService {
@@ -81,5 +82,24 @@ impl AuthenticationService for CognitoService {
             .await
             .map(|_| Ok(()))
             .map_err(|e| format_err!(e.into_service_error()))?
+    }
+
+    async fn verify_token(&self, access_token: &str) -> Result<Claims> {
+        let key_set = KeySet::new(
+            &std::env::var("AWS_REGION").unwrap(),
+            &std::env::var("AWS_COGNITO_USER_POOL_ID").unwrap(),
+        )
+        .unwrap();
+        let verifier = key_set
+            .new_access_token_verifier(
+                &[&std::env::var("AWS_COGNITO_USER_POOL_CLIENT_ID").unwrap()],
+            )
+            .build()?;
+        let claims_json = key_set
+            .verify(&access_token, &verifier)
+            .await
+            .map_err(|e| format_err!(e.to_string()))?;
+        let claims: Claims = serde_json::from_value(claims_json)?;
+        Ok(claims)
     }
 }

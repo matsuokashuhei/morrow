@@ -1,7 +1,7 @@
 use anyhow::Result;
 use std::sync::Arc;
 
-use crate::application::dtos::user_dto::{UpdateUserDto, UserDto};
+use crate::application::dtos::user_dto::{UpdateUserDto, UserDTO};
 use crate::domain::repositories::user_repository::UserRepository;
 
 pub struct UserService {
@@ -21,21 +21,21 @@ impl UserService {
     //     Ok(UserDto::from(created_user))
     // }
 
-    pub async fn get_user(&self, id: i32) -> Result<Option<UserDto>> {
+    pub async fn get_user(&self, id: i32) -> Result<Option<UserDTO>> {
         let user = self.user_repository.find_by_id(id).await?;
-        Ok(user.map(UserDto::from))
+        Ok(user.map(UserDTO::from))
     }
 
-    pub async fn get_all_users(&self) -> Result<Vec<UserDto>> {
+    pub async fn get_all_users(&self) -> Result<Vec<UserDTO>> {
         let users = self.user_repository.find_all().await?;
-        Ok(users.into_iter().map(UserDto::from).collect())
+        Ok(users.into_iter().map(UserDTO::from).collect())
     }
 
-    pub async fn update_user(&self, id: i32, input: UpdateUserDto) -> Result<Option<UserDto>> {
+    pub async fn update_user(&self, id: i32, input: UpdateUserDto) -> Result<Option<UserDTO>> {
         if let Some(mut user) = self.user_repository.find_by_id(id).await? {
             user.name = input.name;
             let updated_user = self.user_repository.update(user).await?;
-            Ok(Some(UserDto::from(updated_user)))
+            Ok(Some(UserDTO::from(updated_user)))
         } else {
             Ok(None)
         }

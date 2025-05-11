@@ -2,9 +2,8 @@ use anyhow::Result;
 use std::sync::Arc;
 
 use crate::{
-    application::dtos::{authentication_dto::SignUpInputDTO, identity_link_dto::IdentityLinkDto},
+    application::dtos::user_dto::UserDTO,
     domain::{
-        entities::{identity_link::NewIdentityLink, user::NewUser},
         repositories::{
             identity_link_repository::IdentityLinkRepository, user_repository::UserRepository,
         },
@@ -12,39 +11,43 @@ use crate::{
     },
 };
 
-pub struct SignUp {
+pub struct AuthenticateUser {
     authentication_service: Arc<dyn AuthenticationService>,
-    user_repository: Arc<dyn UserRepository>,
     identity_link_repository: Arc<dyn IdentityLinkRepository>,
+    user_repository: Arc<dyn UserRepository>,
 }
 
-impl SignUp {
+impl AuthenticateUser {
     pub fn new(
         authentication_service: Arc<dyn AuthenticationService>,
-        user_repository: Arc<dyn UserRepository>,
         identity_link_repository: Arc<dyn IdentityLinkRepository>,
+        user_repository: Arc<dyn UserRepository>,
     ) -> Self {
         Self {
             authentication_service,
-            user_repository,
             identity_link_repository,
+            user_repository,
         }
     }
 
-    pub async fn execute(&self, input: SignUpInputDTO) -> Result<IdentityLinkDto> {
-        let output = self
+    pub async fn execute(&self, access_token: &str) -> Result<UserDTO> {
+        let claims = self
             .authentication_service
-            .sign_up(&input.email, &input.password)
+            .verify_token(access_token)
             .await?;
-        let user = self.user_repository.create(NewUser::from(input)).await?;
         let identity_link = self
             .identity_link_repository
-            .create(NewIdentityLink {
-                provider: self.authentication_service.provider_name(),
-                sub: output.user_sub,
-                user_id: user.id,
-            })
+            .find_by_sub(&claims.sub)
             .await?;
-        Ok(IdentityLinkDto::from(identity_link))
+        let user = self
+            .user_repository
+            .find_by_id(identity_link.user_id)
+            .await?;
+        match user {
+            Some(user) => Ok(UserDTO::from(user)),
+            None => {
+                return Err(anyhow::anyhow!("User not found"));
+            }
+        }
     }
 }

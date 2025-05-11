@@ -2,7 +2,6 @@
 // DTOは、レイヤー間でデータを転送するために使用されます。
 
 // DTOモジュール
-pub mod auth_dto;
 pub mod authentication_dto;
 pub mod identity_link_dto;
 pub mod user_dto;
