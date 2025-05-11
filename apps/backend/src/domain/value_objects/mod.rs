@@ -4,3 +4,4 @@
 // サンプル値オブジェクトをここに追加します
 // pub mod email;
 // pub mod password;
+pub mod authentication;

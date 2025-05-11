@@ -5,7 +5,7 @@ mod presentation;
 
 use dotenvy::dotenv;
 use infrastructure::config::app_config::AppConfig;
-use presentation::graphql::schema::create_schema;
+use presentation::graphql::schema::build_schema;
 use presentation::http::routes::create_routes;
 use std::sync::Arc;
 use tracing::{Level, info};
@@ -38,15 +38,23 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // リポジトリの初期化
     let repositories =
-        infrastructure::database::repositories::init_repositories(connection.clone(), &sdk_config);
+        infrastructure::database::repositories::init_repositories(connection.clone());
     info!("Repositories initialized");
 
+    let authentication_service =
+        Arc::new(infrastructure::authentication::cognito_service::CognitoService::new(&sdk_config));
+
     // アプリケーションサービスの初期化
-    let services = application::services::init_services(Arc::new(repositories));
+    let services = application::services::init_services(Arc::new(repositories.clone())).await;
     info!("Application services initialized");
 
+    let use_cases = application::usecases::init_use_cases(
+        Arc::new(repositories.clone()),
+        authentication_service,
+    );
+
     // GraphQLスキーマの作成
-    let schema = create_schema(&services);
+    let schema = build_schema(&use_cases, &services);
     info!("GraphQL schema created");
 
     // HTTPルーターの作成

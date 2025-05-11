@@ -2,8 +2,7 @@ use chrono::{DateTime, Utc};
 use sea_orm::ActiveValue;
 
 use crate::{
-    application::dtos::{authentication_dto::SignUpDto, user_dto::CreateUserDto},
-    infrastructure::database::models::user,
+    application::dtos::authentication_dto::SignUpInputDTO, infrastructure::database::models::user,
 };
 
 #[derive(Debug, Clone)]
@@ -11,8 +10,8 @@ pub struct NewUser {
     pub name: String,
 }
 
-impl From<SignUpDto> for NewUser {
-    fn from(input: SignUpDto) -> Self {
+impl From<SignUpInputDTO> for NewUser {
+    fn from(input: SignUpInputDTO) -> Self {
         Self { name: input.name }
     }
 }
@@ -35,11 +34,11 @@ pub struct User {
     pub updated_at: DateTime<Utc>,
 }
 
-impl From<CreateUserDto> for NewUser {
-    fn from(input: CreateUserDto) -> Self {
-        Self { name: input.name }
-    }
-}
+// impl From<CreateUserDto> for NewUser {
+//     fn from(input: CreateUserDto) -> Self {
+//         Self { name: input.name }
+//     }
+// }
 
 impl From<User> for user::ActiveModel {
     fn from(user: User) -> user::ActiveModel {

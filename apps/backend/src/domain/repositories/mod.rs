@@ -4,5 +4,6 @@
 // リポジトリトレイト
 pub mod identity_link_repository;
 pub mod oidc_provider;
+pub mod token_verifier;
 pub mod user_repository;
 // pub mod product_repository;
