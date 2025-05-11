@@ -5,15 +5,15 @@ use crate::{
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UserDto {
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct UserDTO {
     pub id: i32,
     pub name: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
 
-impl From<User> for UserDto {
+impl From<User> for UserDTO {
     fn from(user: User) -> Self {
         Self {
             id: user.id,

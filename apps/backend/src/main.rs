@@ -3,11 +3,16 @@ mod domain;
 mod infrastructure;
 mod presentation;
 
+use axum::Router;
+use axum::middleware::from_fn_with_state;
+use axum::routing::get;
 use dotenvy::dotenv;
 use infrastructure::config::app_config::AppConfig;
-use presentation::graphql::schema::build_schema;
-use presentation::http::routes::create_routes;
+use presentation::http::handlers::graphql_handler::{graphql_handler, graphql_playground};
+use presentation::http::middlewares::auth_middleware::auth_middleware;
+use presentation::{graphql::schema::build_schema, http::handlers::health::health_check};
 use std::sync::Arc;
+use tower::ServiceBuilder;
 use tracing::{Level, info};
 use tracing_subscriber::FmtSubscriber;
 
@@ -58,8 +63,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     info!("GraphQL schema created");
 
     // HTTPルーターの作成
-    let router = create_routes(Arc::new(services), schema);
-    info!("HTTP router created");
+    // let router = build_routes(Arc::new(services), schema);
+    let router = Router::new()
+        .route("/health", get(health_check))
+        .route("/graphql", get(graphql_playground).post(graphql_handler))
+        .layer(ServiceBuilder::new().layer(from_fn_with_state(
+            use_cases.authenticate_user,
+            auth_middleware,
+        )))
+        .with_state(schema)
+        .with_state(services);
 
     // サーバーの起動
     let addr = format!("{}:{}", config.host, config.port);

@@ -1,3 +1,5 @@
+use serde::Deserialize;
+
 pub struct SignUpOutput {
     pub user_sub: String,
     pub user_confirmed: bool,
@@ -9,4 +11,9 @@ pub struct SignInOutput {
     pub access_token: String,
     pub refresh_token: String,
     pub expires_in: i32,
+}
+
+#[derive(Deserialize)] // <- Deserialize を derive
+pub struct Claims {
+    pub sub: String,
 }

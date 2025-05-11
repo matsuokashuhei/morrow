@@ -1,7 +1,7 @@
 use async_graphql::{InputObject, SimpleObject};
 use chrono::{DateTime, Utc};
 
-use crate::application::dtos::user_dto::UserDto;
+use crate::application::dtos::user_dto::UserDTO;
 
 #[derive(SimpleObject)]
 pub struct User {
@@ -11,8 +11,8 @@ pub struct User {
     pub updated_at: DateTime<Utc>,
 }
 
-impl From<UserDto> for User {
-    fn from(user: UserDto) -> Self {
+impl From<UserDTO> for User {
+    fn from(user: UserDTO) -> Self {
         Self {
             id: user.id,
             name: user.name,

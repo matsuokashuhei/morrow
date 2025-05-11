@@ -18,22 +18,6 @@ impl UserMutation {
 
 #[Object]
 impl UserMutation {
-    // async fn create_user(
-    //     &self,
-    //     _ctx: &Context<'_>,
-    //     input: CreateUserInputType,
-    // ) -> Result<UserType> {
-    //     let create_user_dto = CreateUserDto::from(input.clone());
-    //     let user = self.user_service.create_user(create_user_dto).await?;
-    //     let create_cognito_user_dto = CreateCognitoUserDto::from(input.clone());
-    //     let cognito_user = self
-    //         .cognito_user_service
-    //         .sign_up(create_cognito_user_dto)
-    //         .await?;
-
-    //     Ok(UserType::from(user))
-    // }
-
     async fn update_user(
         &self,
         _ctx: &Context<'_>,
