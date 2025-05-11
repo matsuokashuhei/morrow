@@ -1,7 +1,8 @@
 use anyhow::Result;
 use std::sync::Arc;
 
-use crate::application::dtos::user_dto::{UpdateUserDto, UserDto};
+use crate::application::dtos::user_dto::{CreateUserDto, UpdateUserDto, UserDto};
+use crate::domain::entities::user::NewUser;
 use crate::domain::repositories::user_repository::UserRepository;
 
 pub struct UserService {
@@ -15,11 +16,11 @@ impl UserService {
         }
     }
 
-    // pub async fn create_user(&self, input: CreateUserDto) -> Result<UserDto> {
-    //     let user = NewUser::from(input);
-    //     let created_user = self.user_repository.create(user).await?;
-    //     Ok(UserDto::from(created_user))
-    // }
+    pub async fn create_user(&self, input: CreateUserDto) -> Result<UserDto> {
+        let user = NewUser::from(input);
+        let created_user = self.user_repository.create(user).await?;
+        Ok(UserDto::from(created_user))
+    }
 
     pub async fn get_user(&self, id: i32) -> Result<Option<UserDto>> {
         let user = self.user_repository.find_by_id(id).await?;

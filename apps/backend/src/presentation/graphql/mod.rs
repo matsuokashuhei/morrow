@@ -1,3 +1,4 @@
+pub mod context;
 pub mod mutations;
 pub mod resolvers;
 pub mod scalars;
@@ -6,3 +7,5 @@ pub mod types;
 
 // このモジュールは、GraphQL APIを提供します。
 // async-graphqlフレームワークを使用したGraphQLインターフェースを実装します。
+
+pub use schema::AppSchema;

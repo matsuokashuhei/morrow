@@ -1,4 +1,4 @@
-use crate::application::services::Services;
+use crate::application::{services::Services, usecases::UseCases};
 use crate::presentation::graphql::mutations::user_mutation::UserMutation;
 use crate::presentation::graphql::resolvers::user_resolver::UserResolver;
 use async_graphql::{EmptySubscription, Schema, SchemaBuilder};
@@ -22,7 +22,7 @@ impl QueryRoot {
 
 // ミューテーションルート定義
 pub struct MutationRoot {
-    auth_mutation: AuthenticationMutation,
+    authentication_mutation: AuthenticationMutation,
     user_mutation: UserMutation,
     // 他のミューテーションをここに追加
 }
@@ -33,8 +33,8 @@ impl MutationRoot {
     async fn users(&self) -> &UserMutation {
         &self.user_mutation
     }
-    async fn auth(&self) -> &AuthenticationMutation {
-        &self.auth_mutation
+    async fn authentication_mutation(&self) -> &AuthenticationMutation {
+        &self.authentication_mutation
     }
 }
 
@@ -42,16 +42,36 @@ impl MutationRoot {
 pub type AppSchema = Schema<QueryRoot, MutationRoot, EmptySubscription>;
 
 // スキーマを作成する関数
-pub fn create_schema(services: &Services) -> AppSchema {
+// pub fn build_schema(services: &Services) -> AppSchema {
+//     let user_resolver = UserResolver::new(Arc::clone(&services.user_service));
+//     let user_mutation = UserMutation::new(Arc::clone(&services.user_service));
+//     let auth_mutation = AuthenticationMutation::new(Arc::clone(&services.authentication_service));
+
+//     Schema::build(
+//         QueryRoot { user_resolver },
+//         MutationRoot {
+//             user_mutation,
+//             auth_mutation,
+//         },
+//         EmptySubscription,
+//     )
+//     .finish()
+// }
+
+pub fn build_schema(use_cases: &UseCases, services: &Services) -> AppSchema {
     let user_resolver = UserResolver::new(Arc::clone(&services.user_service));
     let user_mutation = UserMutation::new(Arc::clone(&services.user_service));
-    let auth_mutation = AuthenticationMutation::new(Arc::clone(&services.auth_service));
+    let authentication_mutation = AuthenticationMutation::new(
+        Arc::clone(&use_cases.sign_up),
+        Arc::clone(&use_cases.sign_in),
+        Arc::clone(&use_cases.sign_out),
+    );
 
     Schema::build(
         QueryRoot { user_resolver },
         MutationRoot {
             user_mutation,
-            auth_mutation,
+            authentication_mutation,
         },
         EmptySubscription,
     )

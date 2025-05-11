@@ -1,16 +1,13 @@
-use crate::{
-    domain::entities::token_set::TokenSet,
-    presentation::graphql::types::authentication_type::{SignInInput, SignUpInput},
-};
+use crate::presentation::graphql::types::authentication_type::{SignInInput, SignUpInput};
 
 #[derive(Debug, Clone)]
-pub struct SignUpDto {
+pub struct SignUpInputDTO {
     pub name: String,
     pub email: String,
     pub password: String,
 }
 
-impl From<SignUpInput> for SignUpDto {
+impl From<SignUpInput> for SignUpInputDTO {
     fn from(input: SignUpInput) -> Self {
         Self {
             name: input.name,
@@ -20,13 +17,18 @@ impl From<SignUpInput> for SignUpDto {
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct SignInDto {
+pub struct SignUpOutputDTO {
+    pub user_sub: String,
+    pub user_confirmed: bool,
+    pub session: Option<String>,
+}
+
+pub struct SignInInputDTO {
     pub email: String,
     pub password: String,
 }
 
-impl From<SignInInput> for SignInDto {
+impl From<SignInInput> for SignInInputDTO {
     fn from(input: SignInInput) -> Self {
         Self {
             email: input.email,
@@ -35,23 +37,13 @@ impl From<SignInInput> for SignInDto {
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct TokenSetDto {
+pub struct SignInOutputDTO {
     pub id_token: String,
     pub access_token: String,
     pub refresh_token: String,
     pub expires_in: i32,
-    pub token_type: String,
 }
 
-impl From<TokenSet> for TokenSetDto {
-    fn from(input: TokenSet) -> Self {
-        Self {
-            id_token: input.id_token,
-            access_token: input.access_token,
-            refresh_token: input.refresh_token,
-            expires_in: input.expires_in,
-            token_type: input.token_type,
-        }
-    }
+pub struct SignOutDTO {
+    pub access_token: String,
 }
