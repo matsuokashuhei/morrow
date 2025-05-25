@@ -4,10 +4,11 @@ use crate::{
 };
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
+use uuid::Uuid; // Add this line
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UserDTO {
-    pub id: i32,
+    pub id: Uuid,
     pub name: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,

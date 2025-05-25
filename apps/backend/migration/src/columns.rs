@@ -1,5 +1,5 @@
 pub use sea_orm_migration::prelude::*;
-use sea_orm_migration::schema::{pk_auto, timestamp};
+use sea_orm_migration::schema::{timestamp_with_time_zone, uuid_null};
 
 #[derive(Iden)]
 enum Column {
@@ -9,19 +9,21 @@ enum Column {
 }
 
 pub fn define_id() -> ColumnDef {
-    pk_auto(Column::Id)
+    uuid_null(Column::Id)
+        .unique_key()
+        .extra("DEFAULT gen_random_uuid()")
+        .take()
 }
 
 pub fn define_created_at() -> ColumnDef {
-    timestamp(Column::CreatedAt)
+    timestamp_with_time_zone(Column::CreatedAt)
         .default(Expr::current_timestamp())
         .take()
 }
 
 pub fn define_updated_at() -> ColumnDef {
-    timestamp(Column::UpdatedAt)
+    timestamp_with_time_zone(Column::UpdatedAt)
         .default(Expr::current_timestamp())
-        .extra("ON UPDATE CURRENT_TIMESTAMP".to_owned())
         .take()
 }
 

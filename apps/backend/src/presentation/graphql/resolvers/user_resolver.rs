@@ -1,10 +1,11 @@
 use async_graphql::{Context, Object, Result};
 use std::sync::Arc;
+use uuid::Uuid;
 
 use crate::application::services::UserService;
 use crate::presentation::graphql::context::UserContext;
 // use crate::presentation::graphql::context::GraphQLContext;
-use crate::presentation::graphql::types::user_type::User;
+use crate::presentation::graphql::types::user_type::User; // This path should now be correct
 
 pub struct UserResolver {
     service: Arc<UserService>,
@@ -19,8 +20,8 @@ impl UserResolver {
 #[Object]
 impl UserResolver {
     // 個別ユーザー取得 - 認証必須
-    async fn user(&self, _ctx: &Context<'_>, id: i32) -> Result<Option<User>> {
-        let user = self.service.get_user(id).await?;
+    async fn user(&self, _ctx: &Context<'_>, id: Uuid) -> Result<Option<User>> {
+        let user = self.service.get_user(id).await?; // Access the inner Uuid via id.0
         Ok(user.map(User::from))
     }
 

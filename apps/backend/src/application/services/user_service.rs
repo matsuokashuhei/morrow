@@ -3,6 +3,7 @@ use std::sync::Arc;
 
 use crate::application::dtos::user_dto::{UpdateUserDto, UserDTO};
 use crate::domain::repositories::user_repository::UserRepository;
+use uuid::Uuid;
 
 pub struct UserService {
     user_repository: Arc<dyn UserRepository>,
@@ -21,8 +22,8 @@ impl UserService {
     //     Ok(UserDto::from(created_user))
     // }
 
-    pub async fn get_user(&self, id: i32) -> Result<Option<UserDTO>> {
-        let user = self.user_repository.find_by_id(id).await?;
+    pub async fn get_user(&self, id: Uuid) -> Result<Option<UserDTO>> {
+        let user = self.user_repository.find_by_id(id).await?; // id is Uuid, find_by_id now expects Uuid
         Ok(user.map(UserDTO::from))
     }
 
@@ -31,8 +32,8 @@ impl UserService {
         Ok(users.into_iter().map(UserDTO::from).collect())
     }
 
-    pub async fn update_user(&self, id: i32, input: UpdateUserDto) -> Result<Option<UserDTO>> {
-        if let Some(mut user) = self.user_repository.find_by_id(id).await? {
+    pub async fn update_user(&self, id: Uuid, input: UpdateUserDto) -> Result<Option<UserDTO>> {
+        if let Some(mut user) = self.user_repository.find_by_id(id).await? { // id is Uuid, find_by_id now expects Uuid
             user.name = input.name;
             let updated_user = self.user_repository.update(user).await?;
             Ok(Some(UserDTO::from(updated_user)))
@@ -41,9 +42,9 @@ impl UserService {
         }
     }
 
-    pub async fn delete_user(&self, id: i32) -> Result<bool> {
-        if let Some(_) = self.user_repository.find_by_id(id).await? {
-            self.user_repository.delete(id).await?;
+    pub async fn delete_user(&self, id: Uuid) -> Result<bool> { // id is Uuid
+        if let Some(_) = self.user_repository.find_by_id(id).await? { // id is Uuid, find_by_id now expects Uuid
+            self.user_repository.delete(id).await?; // id is Uuid, delete now expects Uuid
             Ok(true)
         } else {
             Ok(false)

@@ -2,6 +2,7 @@ use anyhow::Result;
 use async_graphql::async_trait::async_trait;
 use sea_orm::{ActiveModelTrait, DatabaseConnection, EntityTrait};
 use std::sync::Arc;
+use uuid::Uuid;
 
 use crate::domain::entities::user::{NewUser, User};
 use crate::domain::repositories::user_repository::UserRepository;
@@ -28,7 +29,7 @@ impl UserRepository for UserRepositoryImpl {
         Ok(User::from(model))
     }
 
-    async fn find_by_id(&self, id: i32) -> Result<Option<User>> {
+    async fn find_by_id(&self, id: Uuid) -> Result<Option<User>> {
         let model = UserEntity::find_by_id(id)
             .one(self.connection.as_ref())
             .await?;
@@ -49,7 +50,7 @@ impl UserRepository for UserRepositoryImpl {
         Ok(User::from(model))
     }
 
-    async fn delete(&self, id: i32) -> Result<()> {
+    async fn delete(&self, id: Uuid) -> Result<()> {
         UserEntity::delete_by_id(id)
             .exec(self.connection.as_ref())
             .await?;

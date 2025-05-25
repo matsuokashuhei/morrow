@@ -6,37 +6,48 @@ services:
     volumes:
       - ..:/workspace/morrow
     depends_on:
-      - mysql
+      postgres:
+        condition: service_healthy
     ports:
       - 3000:3000
-  mysql:
-    image: mysql:lts
+  postgres:
+    image: postgres:16
     env_file:
       - .env
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       timeout: 30s
       retries: 3
     ports:
-      - 3306:3306
+      - 5432:5432
     volumes:
-      - mysql-data:/var/lib/mysql
-  schemaspy:
-    image: schemaspy/schemaspy
+      - postgres-data:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer
     depends_on:
-      mysql:
+      postgres:
         condition: service_healthy
-    volumes:
-      - ./schemaspy/schemaspy.properties:/schemaspy.properties
-      - ./schemaspy/output:/output
-  schemaspy_web:
-    image: nginx
-    depends_on:
-      - schemaspy
+    # restart: always
     ports:
-      - 8080:80
-    volumes:
-      - ./schemaspy/output:/usr/share/nginx/html
+      - 8080:8080
+
+  # schemaspy:
+  #   image: schemaspy/schemaspy
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   volumes:
+  #     - ./schemaspy/schemaspy.properties:/schemaspy.properties
+  #     - ./schemaspy/output:/output
+  # schemaspy_web:
+  #   image: nginx
+  #   depends_on:
+  #     - schemaspy
+  #   ports:
+  #     - 1432:80
+  #   volumes:
+  #     - ./schemaspy/output:/usr/share/nginx/html
 
 volumes:
-  mysql-data:
+  postgres-data:
