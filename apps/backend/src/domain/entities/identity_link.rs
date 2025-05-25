@@ -1,5 +1,6 @@
 use chrono::{DateTime, Utc};
 use sea_orm::ActiveValue;
+use uuid::Uuid;
 
 use crate::infrastructure::database::models::identity_link;
 
@@ -7,7 +8,7 @@ use crate::infrastructure::database::models::identity_link;
 pub struct NewIdentityLink {
     pub provider: String,
     pub sub: String,
-    pub user_id: i32,
+    pub user_id: Uuid, // Changed from i32
 }
 
 impl From<NewIdentityLink> for identity_link::ActiveModel {
@@ -24,10 +25,10 @@ impl From<NewIdentityLink> for identity_link::ActiveModel {
 
 #[derive(Debug, Clone)]
 pub struct IdentityLink {
-    pub id: i32,
+    pub id: Uuid, // Changed from i32
     pub provider: String,
     pub sub: String,
-    pub user_id: i32,
+    pub user_id: Uuid, // Changed from i32
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }

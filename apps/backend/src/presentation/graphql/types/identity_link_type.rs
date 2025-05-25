@@ -1,14 +1,15 @@
 use async_graphql::SimpleObject;
 use chrono::{DateTime, Utc};
+use uuid::Uuid;
 
 use crate::application::dtos::identity_link_dto::IdentityLinkDto;
 
 #[derive(SimpleObject)]
 pub struct IentityLink {
-    pub id: i32,
+    pub id: Uuid,
     pub provider: String,
     pub sub: String,
-    pub user_id: i32,
+    pub user_id: Uuid,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }

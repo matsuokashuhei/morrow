@@ -17,7 +17,7 @@ tower = "0.5.2"
 tower-http = "0.6.2"
 tracing = "0.1.41"
 tracing-subscriber = "0.3.19"
-async-graphql = { version = "7.0.16", features = ["chrono"] }
+async-graphql = { version = "7.0.16", features = ["chrono", "uuid"] }
 async-graphql-axum = "7.0.16"
 thiserror = "2.0.12"
 # sea-orm = { version = "1.1.10", features = [ "sqlx-mysql", "runtime-tokio-native-tls", "macros" ] }

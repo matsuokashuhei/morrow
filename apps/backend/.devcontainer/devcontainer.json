@@ -18,7 +18,8 @@
         "rust-lang.rust-analyzer",
         "tamasfe.even-better-toml",
         "vadimcn.vscode-lldb",
-        "GraphQL.vscode-graphql"
+        "GraphQL.vscode-graphql",
+        "ms-ossdata.vscode-pgsql"
       ],
       "settings": {
         "[rust]": {

@@ -1,5 +1,6 @@
 use chrono::{DateTime, Utc};
 use sea_orm::ActiveValue;
+use uuid::Uuid;
 
 use crate::{
     application::dtos::authentication_dto::SignUpInputDTO, infrastructure::database::models::user,
@@ -28,7 +29,7 @@ impl From<NewUser> for user::ActiveModel {
 
 #[derive(Debug, Clone)]
 pub struct User {
-    pub id: i32,
+    pub id: Uuid,
     pub name: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,

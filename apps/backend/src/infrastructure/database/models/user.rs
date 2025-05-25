@@ -1,13 +1,14 @@
 use chrono::{DateTime, Utc};
 use sea_orm::entity::prelude::*;
+use uuid::Uuid; // Add this line
 
 use crate::domain::entities::user::User;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "users")]
 pub struct Model {
-    #[sea_orm(primary_key)]
-    pub id: i32,
+    #[sea_orm(primary_key, auto_increment = false)] // Set auto_increment to false
+    pub id: Uuid, // Changed from i32
     pub name: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,

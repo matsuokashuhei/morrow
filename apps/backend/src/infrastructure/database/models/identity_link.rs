@@ -1,16 +1,17 @@
 use chrono::{DateTime, Utc};
 use sea_orm::entity::prelude::*;
+use uuid::Uuid;
 
 use crate::domain::entities::identity_link::IdentityLink;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "identity_links")]
 pub struct Model {
-    #[sea_orm(primary_key)]
-    pub id: i32,
+    #[sea_orm(primary_key, auto_increment = false)] // Set auto_increment to false
+    pub id: Uuid, // Changed from i32
     pub provider: String,
     pub sub: String,
-    pub user_id: i32,
+    pub user_id: Uuid,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }

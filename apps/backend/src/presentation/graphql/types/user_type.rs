@@ -1,11 +1,12 @@
 use async_graphql::{InputObject, SimpleObject};
 use chrono::{DateTime, Utc};
+use uuid::Uuid;
 
 use crate::application::dtos::user_dto::UserDTO;
 
 #[derive(SimpleObject)]
 pub struct User {
-    pub id: i32,
+    pub id: Uuid,
     pub name: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
