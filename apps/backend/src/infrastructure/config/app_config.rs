@@ -17,12 +17,12 @@ impl AppConfig {
                 .parse()
                 .unwrap_or(3000),
             database_url: format!(
-                "mysql://{}:{}@{}:{}/{}",
-                std::env::var("MYSQL_USER").unwrap(),
-                std::env::var("MYSQL_PASSWORD").unwrap(),
-                std::env::var("MYSQL_HOST").unwrap(),
-                std::env::var("MYSQL_PORT").unwrap(),
-                std::env::var("MYSQL_DATABASE").unwrap()
+                "postgres://{}:{}@{}:{}/{}",
+                std::env::var("POSTGRES_USER").unwrap(),
+                std::env::var("POSTGRES_PASSWORD").unwrap(),
+                std::env::var("POSTGRES_HOST").unwrap(),
+                std::env::var("POSTGRES_PORT").unwrap(),
+                std::env::var("POSTGRES_DB").unwrap()
             ),
             aws_cognito_user_pool_client_id: env::var("AWS_COGNITO_USER_POOL_CLIENT_ID").unwrap(),
         })

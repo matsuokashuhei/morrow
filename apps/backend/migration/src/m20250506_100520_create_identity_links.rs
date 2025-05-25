@@ -17,7 +17,7 @@ impl MigrationTrait for Migration {
                     .col(define_id())
                     .col(string_null(IdentityLink::Provider))
                     .col(string_null(IdentityLink::Sub))
-                    .col(integer_null(IdentityLink::UserId))
+                    .col(uuid_null(IdentityLink::UserId))
                     .col(define_created_at())
                     .col(define_updated_at())
                     .index(
