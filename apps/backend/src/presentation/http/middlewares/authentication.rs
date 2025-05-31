@@ -8,20 +8,18 @@ use axum::{
 };
 use std::sync::Arc;
 
-pub async fn auth_middleware(
+pub async fn authenticate_user(
     State(authenticate_user): State<Arc<AuthenticateUser>>,
     headers: HeaderMap,
     mut request: Request,
     next: Next,
 ) -> Result<Response, StatusCode> {
-    // トークンの取得
     let token = extract_token_from_headers(&headers);
     match token {
         Some(token) => {
             let user = authenticate_user.execute(&token).await;
             match user {
                 Ok(user) => {
-                    // ユーザー情報をリクエストのエクステンションに追加
                     request
                         .extensions_mut()
                         .insert(UserContext { user: Some(user) });

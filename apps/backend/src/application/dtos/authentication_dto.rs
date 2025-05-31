@@ -17,12 +17,6 @@ impl From<SignUpInput> for SignUpInputDTO {
     }
 }
 
-pub struct SignUpOutputDTO {
-    pub user_sub: String,
-    pub user_confirmed: bool,
-    pub session: Option<String>,
-}
-
 pub struct SignInInputDTO {
     pub email: String,
     pub password: String,
@@ -44,6 +38,14 @@ pub struct SignInOutputDTO {
     pub expires_in: i32,
 }
 
-pub struct SignOutDTO {
-    pub access_token: String,
+pub struct SignOutInputDTO {
+    pub username: String,
 }
+
+// impl From<SignOutInput> for SignOutInputDTO {
+//     fn from(input: SignOutInput) -> Self {
+//         Self {
+//             username: input.username,
+//         }
+//     }
+// }

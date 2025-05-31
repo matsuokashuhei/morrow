@@ -28,6 +28,12 @@ pub struct TokenSet {
     pub expires_in: i32,
 }
 
+#[derive(SimpleObject)]
+pub struct SignOutResponse {
+    pub success: bool,
+    pub message: String,
+}
+
 impl From<SignInOutputDTO> for TokenSet {
     fn from(input: SignInOutputDTO) -> Self {
         Self {

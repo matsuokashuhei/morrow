@@ -1,10 +1,13 @@
 use chrono::{DateTime, Utc};
 use sea_orm::ActiveValue;
+use tokio::task::Id;
 use uuid::Uuid;
 
 use crate::{
     application::dtos::authentication_dto::SignUpInputDTO, infrastructure::database::models::user,
 };
+
+use super::identity_link::IdentityLink;
 
 #[derive(Debug, Clone)]
 pub struct NewUser {
@@ -33,6 +36,7 @@ pub struct User {
     pub name: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
+    pub identity_links: Vec<IdentityLink>,
 }
 
 // impl From<CreateUserDto> for NewUser {

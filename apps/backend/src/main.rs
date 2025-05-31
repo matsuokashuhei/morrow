@@ -9,7 +9,7 @@ use axum::routing::get;
 use dotenvy::dotenv;
 use infrastructure::config::app_config::AppConfig;
 use presentation::http::handlers::graphql_handler::{graphql_handler, graphql_playground};
-use presentation::http::middlewares::auth_middleware::auth_middleware;
+use presentation::http::middlewares::authentication::authenticate_user;
 use presentation::{graphql::schema::build_schema, http::handlers::health::health_check};
 use std::sync::Arc;
 use tower::ServiceBuilder;
@@ -69,7 +69,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/graphql", get(graphql_playground).post(graphql_handler))
         .layer(ServiceBuilder::new().layer(from_fn_with_state(
             use_cases.authenticate_user,
-            auth_middleware,
+            authenticate_user,
         )))
         .with_state(schema)
         .with_state(services);

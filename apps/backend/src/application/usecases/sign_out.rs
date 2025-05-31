@@ -2,7 +2,7 @@ use anyhow::Result;
 use std::sync::Arc;
 
 use crate::{
-    application::dtos::authentication_dto::SignOutDTO,
+    application::dtos::authentication_dto::SignOutInputDTO,
     domain::services::authentication_service::AuthenticationService,
 };
 
@@ -17,9 +17,9 @@ impl SignOut {
         }
     }
 
-    pub async fn execute(&self, input: SignOutDTO) -> Result<()> {
+    pub async fn execute(&self, input: SignOutInputDTO) -> Result<()> {
         self.authentication_service
-            .sign_out(&input.access_token)
+            .sign_out(&input.username)
             .await?;
         Ok(())
     }

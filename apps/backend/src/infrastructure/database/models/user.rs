@@ -4,6 +4,8 @@ use uuid::Uuid; // Add this line
 
 use crate::domain::entities::user::User;
 
+use super::identity_link;
+
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "users")]
 pub struct Model {
@@ -14,8 +16,24 @@ pub struct Model {
     pub updated_at: DateTime<Utc>,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
+#[derive(Copy, Clone, Debug, EnumIter)]
+pub enum Relation {
+    IdentityLink,
+}
+
+impl RelationTrait for Relation {
+    fn def(&self) -> RelationDef {
+        match self {
+            Relation::IdentityLink => Entity::has_many(identity_link::Entity).into(),
+        }
+    }
+}
+
+impl Related<identity_link::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::IdentityLink.def()
+    }
+}
 
 impl ActiveModelBehavior for ActiveModel {}
 
@@ -26,6 +44,7 @@ impl From<Model> for User {
             name: model.name,
             created_at: model.created_at,
             updated_at: model.updated_at,
+            identity_links: vec![],
         }
     }
 }
