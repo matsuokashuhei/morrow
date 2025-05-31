@@ -74,10 +74,11 @@ impl AuthenticationService for CognitoService {
             .map_err(|e| format_err!(e.into_service_error()))?
     }
 
-    async fn sign_out(&self, access_token: &str) -> Result<()> {
+    async fn sign_out(&self, username: &str) -> Result<()> {
         self.client
-            .global_sign_out()
-            .access_token(access_token)
+            .admin_user_global_sign_out()
+            .user_pool_id(std::env::var("AWS_COGNITO_USER_POOL_ID").unwrap())
+            .username(username)
             .send()
             .await
             .map(|_| Ok(()))

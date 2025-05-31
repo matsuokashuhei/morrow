@@ -2,7 +2,7 @@ use anyhow::Result;
 use std::sync::Arc;
 
 use crate::{
-    application::dtos::user_dto::UserDTO,
+    application::dtos::{identity_link_dto::IdentityLinkDto, user_dto::UserDTO},
     domain::{
         repositories::{
             identity_link_repository::IdentityLinkRepository, user_repository::UserRepository,
@@ -44,7 +44,11 @@ impl AuthenticateUser {
             .find_by_id(identity_link.user_id)
             .await?;
         match user {
-            Some(user) => Ok(UserDTO::from(user)),
+            Some(user) => {
+                let mut user_dto = UserDTO::from(user.clone());
+                user_dto.identity_links = vec![IdentityLinkDto::from(identity_link)];
+                Ok(user_dto)
+            }
             None => {
                 return Err(anyhow::anyhow!("User not found"));
             }
