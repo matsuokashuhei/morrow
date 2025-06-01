@@ -4,7 +4,9 @@ use crate::{
 };
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use uuid::Uuid; // Add this line
+use uuid::Uuid;
+
+use super::identity_link_dto::IdentityLinkDto;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UserDTO {
@@ -12,6 +14,7 @@ pub struct UserDTO {
     pub name: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
+    pub identity_links: Vec<IdentityLinkDto>,
 }
 
 impl From<User> for UserDTO {
@@ -21,6 +24,7 @@ impl From<User> for UserDTO {
             name: user.name,
             created_at: user.created_at,
             updated_at: user.updated_at,
+            identity_links: user.identity_links.into_iter().map(IdentityLinkDto::from).collect(),
         }
     }
 }

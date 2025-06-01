@@ -3,9 +3,9 @@ use async_graphql::{Context, Object, Result};
 use std::sync::Arc;
 use uuid::Uuid;
 
-use crate::application::dtos::user_dto::UpdateUserDto;
+use crate::application::dtos::user_dto::{CreateUserDto, UpdateUserDto};
 use crate::application::services::UserService;
-use crate::presentation::graphql::types::user_type::{UpdateUserInput, User}; // This path should now be correct
+use crate::presentation::graphql::types::user_type::{CreateUserInput, UpdateUserInput, User}; // This path should now be correct
 
 pub struct UserMutation {
     user_service: Arc<UserService>,
@@ -19,6 +19,17 @@ impl UserMutation {
 
 #[Object]
 impl UserMutation {
+    async fn create_user(
+        &self,
+        _ctx: &Context<'_>,
+        input: CreateUserInput,
+    ) -> Result<User> {
+        let dto = CreateUserDto::from(input);
+        let user = self.user_service.create_user(dto).await?;
+
+        Ok(User::from(user))
+    }
+
     async fn update_user(
         &self,
         _ctx: &Context<'_>,

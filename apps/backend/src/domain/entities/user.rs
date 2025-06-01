@@ -3,12 +3,17 @@ use sea_orm::ActiveValue;
 use uuid::Uuid;
 
 use crate::{
-    application::dtos::authentication_dto::SignUpInputDTO, infrastructure::database::models::user,
+    application::dtos::{authentication_dto::SignUpInputDTO, user_dto::CreateUserDto},
+    domain::enums::user_role::UserRole,
+    infrastructure::database::models::user,
 };
+
+use super::identity_link::IdentityLink;
 
 #[derive(Debug, Clone)]
 pub struct NewUser {
     pub name: String,
+    pub role: UserRole,
 }
 
 impl From<SignUpInputDTO> for NewUser {
@@ -33,13 +38,14 @@ pub struct User {
     pub name: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
+    pub identity_links: Vec<IdentityLink>,
 }
 
-// impl From<CreateUserDto> for NewUser {
-//     fn from(input: CreateUserDto) -> Self {
-//         Self { name: input.name }
-//     }
-// }
+impl From<CreateUserDto> for NewUser {
+    fn from(input: CreateUserDto) -> Self {
+        Self { name: input.name }
+    }
+}
 
 impl From<User> for user::ActiveModel {
     fn from(user: User) -> user::ActiveModel {

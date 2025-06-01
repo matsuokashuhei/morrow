@@ -1,11 +1,19 @@
-use async_graphql::{Context, Object, Result};
+use async_graphql::{Context, Object, Result, SimpleObject};
+use chrono::{DateTime, Utc};
 use std::sync::Arc;
 use uuid::Uuid;
 
 use crate::application::services::UserService;
 use crate::presentation::graphql::context::UserContext;
-// use crate::presentation::graphql::context::GraphQLContext;
-use crate::presentation::graphql::types::user_type::User; // This path should now be correct
+use crate::presentation::graphql::types::user_type::User;
+
+#[derive(SimpleObject)]
+pub struct UserStatistics {
+    pub total_users: i32,
+    pub active_users: i32,
+    pub new_users_today: i32,
+    pub last_updated: DateTime<Utc>,
+}
 
 pub struct UserResolver {
     service: Arc<UserService>,
@@ -40,5 +48,18 @@ impl UserResolver {
         } else {
             return Err("User not found".into());
         }
+    }
+
+    // User statistics for admin dashboard
+    async fn user_statistics(&self, _ctx: &Context<'_>) -> Result<UserStatistics> {
+        // In a real application, you'd calculate these from the database
+        let all_users = self.service.get_all_users().await?;
+
+        Ok(UserStatistics {
+            total_users: all_users.len() as i32,
+            active_users: all_users.len() as i32, // In real app, filter by activity
+            new_users_today: 0,                   // In real app, filter by creation date
+            last_updated: chrono::Utc::now(),
+        })
     }
 }

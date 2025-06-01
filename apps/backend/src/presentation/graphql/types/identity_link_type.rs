@@ -5,7 +5,7 @@ use uuid::Uuid;
 use crate::application::dtos::identity_link_dto::IdentityLinkDto;
 
 #[derive(SimpleObject)]
-pub struct IentityLink {
+pub struct IdentityLink {
     pub id: Uuid,
     pub provider: String,
     pub sub: String,
@@ -14,7 +14,7 @@ pub struct IentityLink {
     pub updated_at: DateTime<Utc>,
 }
 
-impl From<IdentityLinkDto> for IentityLink {
+impl From<IdentityLinkDto> for IdentityLink {
     fn from(dto: IdentityLinkDto) -> Self {
         Self {
             id: dto.id,
