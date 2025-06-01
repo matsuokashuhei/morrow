@@ -12,6 +12,12 @@ pub struct QueryRoot {
     // 他のクエリをここに追加
 }
 
+impl QueryRoot {
+    pub fn new(user_resolver: UserResolver) -> Self {
+        Self { user_resolver }
+    }
+}
+
 #[async_graphql::Object]
 impl QueryRoot {
     // ユーザークエリへのアクセスを提供
@@ -25,6 +31,15 @@ pub struct MutationRoot {
     authentication_mutation: AuthenticationMutation,
     user_mutation: UserMutation,
     // 他のミューテーションをここに追加
+}
+
+impl MutationRoot {
+    pub fn new(authentication_mutation: AuthenticationMutation, user_mutation: UserMutation) -> Self {
+        Self {
+            authentication_mutation,
+            user_mutation,
+        }
+    }
 }
 
 #[async_graphql::Object]
@@ -68,11 +83,8 @@ pub fn build_schema(use_cases: &UseCases, services: &Services) -> AppSchema {
     );
 
     Schema::build(
-        QueryRoot { user_resolver },
-        MutationRoot {
-            user_mutation,
-            authentication_mutation,
-        },
+        QueryRoot::new(user_resolver),
+        MutationRoot::new(authentication_mutation, user_mutation),
         EmptySubscription,
     )
     .finish()

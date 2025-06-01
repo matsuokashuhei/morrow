@@ -5,6 +5,7 @@ use uuid::Uuid;
 
 use crate::application::services::UserService;
 use crate::presentation::graphql::context::UserContext;
+use crate::presentation::graphql::guards::{AuthenticationGuard, RoleGuard};
 use crate::presentation::graphql::types::user_type::User;
 
 #[derive(SimpleObject)]
@@ -28,18 +29,21 @@ impl UserResolver {
 #[Object]
 impl UserResolver {
     // 個別ユーザー取得 - 認証必須
+    #[graphql(guard = "AuthenticationGuard")]
     async fn user(&self, _ctx: &Context<'_>, id: Uuid) -> Result<Option<User>> {
         let user = self.service.get_user(id).await?; // Access the inner Uuid via id.0
         Ok(user.map(User::from))
     }
 
     // 全ユーザー取得 - 管理者ロール必須
+    #[graphql(guard = "RoleGuard::admin()")]
     async fn users(&self, _ctx: &Context<'_>) -> Result<Vec<User>> {
         let users = self.service.get_all_users().await?;
         Ok(users.into_iter().map(User::from).collect())
     }
 
     // 現在認証されているユーザーの情報を取得
+    #[graphql(guard = "AuthenticationGuard")]
     async fn me(&self, ctx: &Context<'_>) -> Result<Option<User>> {
         let user_context = ctx.data::<UserContext>()?;
         if let Some(user) = user_context.user.clone() {
@@ -51,6 +55,7 @@ impl UserResolver {
     }
 
     // User statistics for admin dashboard
+    #[graphql(guard = "RoleGuard::admin()")]
     async fn user_statistics(&self, _ctx: &Context<'_>) -> Result<UserStatistics> {
         // In a real application, you'd calculate these from the database
         let all_users = self.service.get_all_users().await?;
