@@ -33,6 +33,7 @@ pub fn init_use_cases(
     let sign_in = SignIn::new(
         authentication_service.clone(),
         repositories.identity_link_repository.clone(),
+        repositories.user_repository.clone(),
     );
 
     let sign_out = sign_out::SignOut::new(authentication_service.clone());

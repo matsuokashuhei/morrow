@@ -24,7 +24,7 @@ impl From<User> for UserDTO {
             name: user.name,
             created_at: user.created_at,
             updated_at: user.updated_at,
-            identity_links: vec![],
+            identity_links: user.identity_links.into_iter().map(IdentityLinkDto::from).collect(),
         }
     }
 }
