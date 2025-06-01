@@ -3,6 +3,7 @@ use chrono::{DateTime, Utc};
 use uuid::Uuid;
 
 use crate::application::dtos::user_dto::UserDTO;
+use crate::presentation::graphql::types::identity_link_type::IdentityLink;
 
 #[derive(SimpleObject)]
 pub struct User {
@@ -10,6 +11,7 @@ pub struct User {
     pub name: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
+    pub identity_links: Vec<IdentityLink>,
 }
 
 impl From<UserDTO> for User {
@@ -19,6 +21,7 @@ impl From<UserDTO> for User {
             name: user.name,
             created_at: user.created_at,
             updated_at: user.updated_at,
+            identity_links: user.identity_links.into_iter().map(IdentityLink::from).collect(),
         }
     }
 }

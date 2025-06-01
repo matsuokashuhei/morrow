@@ -12,7 +12,7 @@ use crate::presentation::graphql::context::UserContext;
 use crate::presentation::graphql::types::authentication_type::{
     SignInInput, SignOutResponse, SignUpInput, TokenSet,
 };
-use crate::presentation::graphql::types::identity_link_type::IentityLink;
+use crate::presentation::graphql::types::identity_link_type::IdentityLink;
 
 pub struct AuthenticationMutation {
     sign_up: Arc<SignUp>,
@@ -32,11 +32,11 @@ impl AuthenticationMutation {
 
 #[Object]
 impl AuthenticationMutation {
-    async fn sign_up(&self, _ctx: &Context<'_>, input: SignUpInput) -> Result<IentityLink> {
+    async fn sign_up(&self, _ctx: &Context<'_>, input: SignUpInput) -> Result<IdentityLink> {
         let input_dto = SignUpInputDTO::from(input);
         let identity_link_dto = self.sign_up.execute(input_dto).await?;
 
-        Ok(IentityLink::from(identity_link_dto))
+        Ok(IdentityLink::from(identity_link_dto))
     }
 
     async fn sign_in(&self, _ctx: &Context<'_>, input: SignInInput) -> Result<TokenSet> {
