@@ -8,6 +8,7 @@ mod tests {
         },
         domain::{
             entities::{identity_link::{IdentityLink, NewIdentityLink}, user::{User, NewUser}},
+            enums::user_role::UserRole,
             repositories::{identity_link_repository::IdentityLinkRepository, user_repository::UserRepository},
             services::authentication_service::AuthenticationService,
             value_objects::authentication::{SignUpOutput, SignInOutput, Claims},
@@ -57,16 +58,15 @@ mod tests {
         #[async_trait]
         impl IdentityLinkRepository for IdentityLinkRepo {
             async fn create(&self, identity_link: NewIdentityLink) -> Result<IdentityLink>;
-            async fn find_by_sub(&self, sub: &str) -> Result<Option<IdentityLink>>;
-            async fn find_by_user_id(&self, user_id: Uuid) -> Result<Vec<IdentityLink>>;
-            async fn delete(&self, id: Uuid) -> Result<()>;
+            async fn find_by_sub(&self, sub: &str) -> Result<IdentityLink>;
         }
     }
 
     fn create_test_user() -> User {
         User {
             id: Uuid::new_v4(),
-            name: Some("Test User".to_string()),
+            name: "Test User".to_string(),
+            role: UserRole::User,
             identity_links: vec![],
             created_at: chrono::Utc::now(),
             updated_at: chrono::Utc::now(),
@@ -80,6 +80,18 @@ mod tests {
         let mut mock_identity_link_repo = MockIdentityLinkRepo::new();
 
         // Setup default mock behaviors
+        mock_auth_service
+            .expect_provider_name()
+            .returning(|| "cognito".to_string());
+
+        mock_auth_service
+            .expect_verify_token()
+            .returning(|_| {
+                Ok(Claims {
+                    sub: "test-sub-123".to_string(),
+                })
+            });
+
         mock_auth_service
             .expect_sign_up()
             .returning(|_, _| {
@@ -109,8 +121,25 @@ mod tests {
             .expect_create()
             .returning(|_| Ok(create_test_user()));
 
+        mock_user_repo
+            .expect_find_by_id()
+            .returning(|_| Ok(Some(create_test_user())));
+
         mock_identity_link_repo
             .expect_create()
+            .returning(|_| {
+                Ok(IdentityLink {
+                    id: Uuid::new_v4(),
+                    user_id: Uuid::new_v4(),
+                    provider: "cognito".to_string(),
+                    sub: "test-sub-123".to_string(),
+                    created_at: chrono::Utc::now(),
+                    updated_at: chrono::Utc::now(),
+                })
+            });
+
+        mock_identity_link_repo
+            .expect_find_by_sub()
             .returning(|_| {
                 Ok(IdentityLink {
                     id: Uuid::new_v4(),
@@ -159,11 +188,8 @@ mod tests {
 
         // Build schema
         Schema::build(
-            QueryRoot { user_resolver },
-            MutationRoot {
-                user_mutation,
-                authentication_mutation,
-            },
+            QueryRoot::new(user_resolver),
+            MutationRoot::new(authentication_mutation, user_mutation),
             EmptySubscription,
         )
         .finish()
@@ -175,7 +201,7 @@ mod tests {
 
         let query = r#"
             mutation SignUp($input: SignUpInput!) {
-                authentication_mutation {
+                authenticationMutation {
                     signUp(input: $input) {
                         id
                         userId
@@ -186,20 +212,21 @@ mod tests {
             }
         "#;
 
-        let variables = serde_json::json!({
+        let variables = async_graphql::Variables::from_json(serde_json::json!({
             "input": {
                 "name": "Test User",
                 "email": "test@example.com",
                 "password": "password123"
             }
-        });
+        }));
 
         let request = Request::new(query).variables(variables);
         let response = schema.execute(request).await;
 
         println!("Response: {:?}", response);
         assert!(response.errors.is_empty(), "GraphQL errors: {:?}", response.errors);
-        assert!(response.data.is_some());
+        // Just check that we got some data back
+        assert!(matches!(response.data, async_graphql::Value::Object(_)));
     }
 
     #[tokio::test]
@@ -208,7 +235,7 @@ mod tests {
 
         let query = r#"
             mutation SignIn($input: SignInInput!) {
-                authentication_mutation {
+                authenticationMutation {
                     signIn(input: $input) {
                         idToken
                         accessToken
@@ -219,18 +246,18 @@ mod tests {
             }
         "#;
 
-        let variables = serde_json::json!({
+        let variables = async_graphql::Variables::from_json(serde_json::json!({
             "input": {
                 "email": "test@example.com",
                 "password": "password123"
             }
-        });
+        }));
 
         let request = Request::new(query).variables(variables);
         let response = schema.execute(request).await;
 
         println!("Response: {:?}", response);
         assert!(response.errors.is_empty(), "GraphQL errors: {:?}", response.errors);
-        assert!(response.data.is_some());
+        assert!(matches!(response.data, async_graphql::Value::Object(_)));
     }
 }
