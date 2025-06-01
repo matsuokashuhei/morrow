@@ -1,7 +1,4 @@
-mod application;
-mod domain;
-mod infrastructure;
-mod presentation;
+use backend::{application, infrastructure, presentation};
 
 use axum::Router;
 use axum::middleware::from_fn_with_state;
