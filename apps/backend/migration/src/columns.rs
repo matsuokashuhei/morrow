@@ -33,6 +33,7 @@ pub enum User {
     Table,
     Id,
     Name,
+    Role,
 }
 
 #[derive(DeriveIden)]
