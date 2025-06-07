@@ -163,11 +163,8 @@ mod tests {
 
         // Build schema
         Schema::build(
-            QueryRoot { user_resolver },
-            MutationRoot {
-                user_mutation,
-                authentication_mutation,
-            },
+            QueryRoot::new(user_resolver),
+            MutationRoot::new(authentication_mutation, user_mutation),
             EmptySubscription,
         )
         .finish()

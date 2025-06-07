@@ -18,7 +18,10 @@ pub struct NewUser {
 
 impl From<SignUpInputDTO> for NewUser {
     fn from(input: SignUpInputDTO) -> Self {
-        Self { name: input.name }
+        Self {
+            name: input.name,
+            role: UserRole::default(), // Default to User role for new signups
+        }
     }
 }
 
@@ -27,6 +30,7 @@ impl From<NewUser> for user::ActiveModel {
         user::ActiveModel {
             id: ActiveValue::NotSet,
             name: ActiveValue::Set(user.name),
+            role: ActiveValue::Set(user.role.to_string()),
             ..Default::default()
         }
     }
@@ -36,6 +40,7 @@ impl From<NewUser> for user::ActiveModel {
 pub struct User {
     pub id: Uuid,
     pub name: String,
+    pub role: UserRole,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
     pub identity_links: Vec<IdentityLink>,
@@ -43,7 +48,10 @@ pub struct User {
 
 impl From<CreateUserDto> for NewUser {
     fn from(input: CreateUserDto) -> Self {
-        Self { name: input.name }
+        Self {
+            name: input.name,
+            role: UserRole::default(), // Default to User role for new users
+        }
     }
 }
 
@@ -52,6 +60,7 @@ impl From<User> for user::ActiveModel {
         user::ActiveModel {
             id: ActiveValue::Set(user.id),
             name: ActiveValue::Set(user.name.clone()),
+            role: ActiveValue::Set(user.role.to_string()),
             ..Default::default()
         }
     }

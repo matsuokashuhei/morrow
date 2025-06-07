@@ -1,4 +1,5 @@
 pub mod context;
+pub mod guards;
 pub mod mutations;
 pub mod resolvers;
 pub mod scalars;

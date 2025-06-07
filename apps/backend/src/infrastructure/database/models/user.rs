@@ -1,17 +1,19 @@
 use chrono::{DateTime, Utc};
 use sea_orm::entity::prelude::*;
-use uuid::Uuid; // Add this line
+use uuid::Uuid;
 
 use crate::domain::entities::user::User;
+use crate::domain::enums::user_role::UserRole;
 
 use super::identity_link;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "users")]
 pub struct Model {
-    #[sea_orm(primary_key, auto_increment = false)] // Set auto_increment to false
-    pub id: Uuid, // Changed from i32
+    #[sea_orm(primary_key, auto_increment = false)]
+    pub id: Uuid,
     pub name: String,
+    pub role: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
@@ -42,6 +44,7 @@ impl From<Model> for User {
         Self {
             id: model.id,
             name: model.name,
+            role: UserRole::from(model.role),
             created_at: model.created_at,
             updated_at: model.updated_at,
             identity_links: vec![],
