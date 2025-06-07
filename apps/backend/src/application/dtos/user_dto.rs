@@ -27,7 +27,11 @@ impl From<User> for UserDTO {
             role: user.role,
             created_at: user.created_at,
             updated_at: user.updated_at,
-            identity_links: user.identity_links.into_iter().map(IdentityLinkDto::from).collect(),
+            identity_links: user
+                .identity_links
+                .into_iter()
+                .map(IdentityLinkDto::from)
+                .collect(),
         }
     }
 }

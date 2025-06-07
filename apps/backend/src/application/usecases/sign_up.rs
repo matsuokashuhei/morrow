@@ -110,6 +110,7 @@ mod tests {
         User {
             id: Uuid::new_v4(),
             name: "Test User".to_string(),
+            role: crate::domain::enums::user_role::UserRole::User,
             created_at: chrono::Utc::now(),
             updated_at: chrono::Utc::now(),
             identity_links: Vec::new(),

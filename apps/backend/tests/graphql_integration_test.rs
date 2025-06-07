@@ -1,26 +1,33 @@
 #[cfg(test)]
 mod tests {
-    use async_graphql::{Request, Schema, EmptySubscription};
+    use anyhow::Result;
+    use async_graphql::{EmptySubscription, Request, Schema};
+    use async_trait::async_trait;
     use backend::{
         application::{
-            usecases::{sign_up::SignUp, sign_in::SignIn, sign_out::SignOut},
             services::UserService,
+            usecases::{sign_in::SignIn, sign_out::SignOut, sign_up::SignUp},
         },
         domain::{
-            entities::{identity_link::{IdentityLink, NewIdentityLink}, user::{User, NewUser}},
+            entities::{
+                identity_link::{IdentityLink, NewIdentityLink},
+                user::{NewUser, User},
+            },
             enums::user_role::UserRole,
-            repositories::{identity_link_repository::IdentityLinkRepository, user_repository::UserRepository},
+            repositories::{
+                identity_link_repository::IdentityLinkRepository, user_repository::UserRepository,
+            },
             services::authentication_service::AuthenticationService,
-            value_objects::authentication::{SignUpOutput, SignInOutput, Claims},
+            value_objects::authentication::{Claims, SignInOutput, SignUpOutput},
         },
         presentation::graphql::{
-            schema::{QueryRoot, MutationRoot},
-            mutations::{authentication_mutation::AuthenticationMutation, user_mutation::UserMutation},
+            mutations::{
+                authentication_mutation::AuthenticationMutation, user_mutation::UserMutation,
+            },
             resolvers::user_resolver::UserResolver,
+            schema::{MutationRoot, QueryRoot},
         },
     };
-    use anyhow::Result;
-    use async_trait::async_trait;
     use mockall::mock;
     use std::sync::Arc;
     use uuid::Uuid;
@@ -84,38 +91,30 @@ mod tests {
             .expect_provider_name()
             .returning(|| "cognito".to_string());
 
-        mock_auth_service
-            .expect_verify_token()
-            .returning(|_| {
-                Ok(Claims {
-                    sub: "test-sub-123".to_string(),
-                })
-            });
+        mock_auth_service.expect_verify_token().returning(|_| {
+            Ok(Claims {
+                sub: "test-sub-123".to_string(),
+            })
+        });
 
-        mock_auth_service
-            .expect_sign_up()
-            .returning(|_, _| {
-                Ok(SignUpOutput {
-                    user_sub: "test-sub-123".to_string(),
-                    user_confirmed: true,
-                    session: None,
-                })
-            });
+        mock_auth_service.expect_sign_up().returning(|_, _| {
+            Ok(SignUpOutput {
+                user_sub: "test-sub-123".to_string(),
+                user_confirmed: true,
+                session: None,
+            })
+        });
 
-        mock_auth_service
-            .expect_sign_in()
-            .returning(|_, _| {
-                Ok(SignInOutput {
-                    id_token: "test-id-token".to_string(),
-                    access_token: "test-access-token".to_string(),
-                    refresh_token: "test-refresh-token".to_string(),
-                    expires_in: 3600,
-                })
-            });
+        mock_auth_service.expect_sign_in().returning(|_, _| {
+            Ok(SignInOutput {
+                id_token: "test-id-token".to_string(),
+                access_token: "test-access-token".to_string(),
+                refresh_token: "test-refresh-token".to_string(),
+                expires_in: 3600,
+            })
+        });
 
-        mock_auth_service
-            .expect_sign_out()
-            .returning(|_| Ok(()));
+        mock_auth_service.expect_sign_out().returning(|_| Ok(()));
 
         mock_user_repo
             .expect_create()
@@ -125,31 +124,27 @@ mod tests {
             .expect_find_by_id()
             .returning(|_| Ok(Some(create_test_user())));
 
-        mock_identity_link_repo
-            .expect_create()
-            .returning(|_| {
-                Ok(IdentityLink {
-                    id: Uuid::new_v4(),
-                    user_id: Uuid::new_v4(),
-                    provider: "cognito".to_string(),
-                    sub: "test-sub-123".to_string(),
-                    created_at: chrono::Utc::now(),
-                    updated_at: chrono::Utc::now(),
-                })
-            });
+        mock_identity_link_repo.expect_create().returning(|_| {
+            Ok(IdentityLink {
+                id: Uuid::new_v4(),
+                user_id: Uuid::new_v4(),
+                provider: "cognito".to_string(),
+                sub: "test-sub-123".to_string(),
+                created_at: chrono::Utc::now(),
+                updated_at: chrono::Utc::now(),
+            })
+        });
 
-        mock_identity_link_repo
-            .expect_find_by_sub()
-            .returning(|_| {
-                Ok(IdentityLink {
-                    id: Uuid::new_v4(),
-                    user_id: Uuid::new_v4(),
-                    provider: "cognito".to_string(),
-                    sub: "test-sub-123".to_string(),
-                    created_at: chrono::Utc::now(),
-                    updated_at: chrono::Utc::now(),
-                })
-            });
+        mock_identity_link_repo.expect_find_by_sub().returning(|_| {
+            Ok(IdentityLink {
+                id: Uuid::new_v4(),
+                user_id: Uuid::new_v4(),
+                provider: "cognito".to_string(),
+                sub: "test-sub-123".to_string(),
+                created_at: chrono::Utc::now(),
+                updated_at: chrono::Utc::now(),
+            })
+        });
 
         mock_user_repo
             .expect_find_all()
@@ -180,11 +175,7 @@ mod tests {
         // Create GraphQL components
         let user_resolver = UserResolver::new(user_service.clone());
         let user_mutation = UserMutation::new(user_service.clone());
-        let authentication_mutation = AuthenticationMutation::new(
-            sign_up,
-            sign_in,
-            sign_out,
-        );
+        let authentication_mutation = AuthenticationMutation::new(sign_up, sign_in, sign_out);
 
         // Build schema
         Schema::build(
@@ -224,7 +215,11 @@ mod tests {
         let response = schema.execute(request).await;
 
         println!("Response: {:?}", response);
-        assert!(response.errors.is_empty(), "GraphQL errors: {:?}", response.errors);
+        assert!(
+            response.errors.is_empty(),
+            "GraphQL errors: {:?}",
+            response.errors
+        );
         // Just check that we got some data back
         assert!(matches!(response.data, async_graphql::Value::Object(_)));
     }
@@ -257,7 +252,11 @@ mod tests {
         let response = schema.execute(request).await;
 
         println!("Response: {:?}", response);
-        assert!(response.errors.is_empty(), "GraphQL errors: {:?}", response.errors);
+        assert!(
+            response.errors.is_empty(),
+            "GraphQL errors: {:?}",
+            response.errors
+        );
         assert!(matches!(response.data, async_graphql::Value::Object(_)));
     }
 }
